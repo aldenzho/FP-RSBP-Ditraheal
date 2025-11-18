@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar - Trauma Healing Expert System</title>
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>Trauma Healing Expert System</h1>
+                <p>Buat akun baru</p>
+            </div>
+            
+            <form id="registerForm" class="auth-form">
+                <div id="registerMessage" class="message hidden"></div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">Nama Depan</label>
+                        <input type="text" id="firstName" placeholder="Nama depan" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="lastName">Nama Belakang</label>
+                        <input type="text" id="lastName" placeholder="Nama belakang" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="gender">Gender</label>
+                        <select id="gender" required>
+                            <option value="">Pilih Gender</option>
+                            <option value="male">Laki-laki</option>
+                            <option value="female">Perempuan</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="age">Usia</label>
+                        <input type="number" id="age" placeholder="Usia" min="1" max="100" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="instagram">Akun Instagram</label>
+                    <input type="text" id="instagram" placeholder="Username Instagram">
+                </div>
+                
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" placeholder="Masukkan email Anda" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="registerPassword">Password</label>
+                    <input type="password" id="registerPassword" placeholder="Buat password (min. 6 karakter)" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-full">Daftar</button>
+                
+                <div class="auth-links">
+                    <p>Sudah punya akun? <a href="/login">Masuk di sini</a></p>
+                    <p><a href="/">Kembali ke halaman utama</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>

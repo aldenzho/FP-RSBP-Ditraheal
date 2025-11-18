@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Trauma Healing Expert System</title>
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>Trauma Healing Expert System</h1>
+                <p>Masuk ke akun Anda</p>
+            </div>
+            
+            <form id="loginForm" class="auth-form">
+                <div id="loginMessage" class="message hidden"></div>
+                
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" placeholder="Masukkan email Anda" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" placeholder="Masukkan password Anda" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-full">Masuk</button>
+                
+                <div class="auth-links">
+                    <p>Belum punya akun? <a href="/register">Daftar di sini</a></p>
+                    <p><a href="/">Kembali ke halaman utama</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>
