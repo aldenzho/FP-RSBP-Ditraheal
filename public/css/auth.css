@@ -2,10 +2,14 @@
     --primary-color: #20B2AA;
     --primary-light: #E0F2F1;
     --primary-dark: #00897B;
+    --secondary-color: #4ECDC4;
+    --accent-color: #A7E8E1;
     --text-color: #333;
-    --light-gray: #f5f5f5;
+    --text-light: #666;
+    --light-gray: #f8f9fa;
     --white: #ffffff;
-    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    --shadow-hover: 0 15px 40px rgba(0, 0, 0, 0.12);
 }
 
 * {
@@ -16,165 +20,290 @@
 }
 
 body {
-    background: linear-gradient(135deg, var(--primary-light) 0%, #ffffff 100%);
+    background: linear-gradient(135deg, var(--primary-light) 0%, #ffffff 50%, var(--accent-color) 100%);
     color: var(--text-color);
+    line-height: 1.6;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    padding: 20px;
+    padding: 40px 20px;
 }
 
+/* PERBESAR CONTAINER */
 .auth-container {
     width: 100%;
-    max-width: 500px;
+    max-width: 600px; /* Diperbesar dari 500px */
+    margin: 0 auto;
 }
 
 .auth-card {
     background-color: var(--white);
-    border-radius: 15px;
+    border-radius: 20px; /* Border radius lebih besar */
     box-shadow: var(--shadow);
     overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.auth-card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-5px);
 }
 
 .auth-header {
-    background-color: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
     color: white;
-    padding: 30px;
+    padding: 40px 30px; /* Padding diperbesar */
     text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 0%, rgba(255,255,255,0.1) 100%);
 }
 
 .auth-header h1 {
-    font-size: 24px;
-    font-weight: 600;
-    margin-bottom: 5px;
+    font-size: 2rem; /* Font lebih besar */
+    font-weight: 700;
+    margin-bottom: 10px;
+    position: relative;
 }
 
 .auth-header p {
-    font-size: 16px;
+    font-size: 1.1rem; /* Font lebih besar */
     opacity: 0.9;
+    position: relative;
 }
 
 .auth-form {
-    padding: 30px;
+    padding: 40px; /* Padding diperbesar */
 }
 
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 25px; /* Margin lebih longgar */
 }
 
 .form-row {
     display: flex;
-    gap: 15px;
+    gap: 20px; /* Gap lebih besar */
+    margin-bottom: 0;
 }
 
 .form-row .form-group {
     flex: 1;
+    margin-bottom: 0;
 }
 
 label {
     display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-    font-size: 14px;
+    margin-bottom: 10px; /* Margin lebih besar */
+    font-weight: 600; /* Font lebih tebal */
+    font-size: 15px;
     color: var(--text-color);
 }
 
 input, select {
     width: 100%;
-    padding: 12px 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 14px;
-    transition: all 0.3s;
+    padding: 16px 18px; /* Padding lebih besar */
+    border: 2px solid #e1e5e9; /* Border lebih tebal */
+    border-radius: 10px; /* Border radius lebih besar */
+    font-size: 16px;
+    transition: all 0.3s ease;
     background-color: var(--light-gray);
 }
 
 input:focus, select:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(32, 178, 170, 0.2);
+    box-shadow: 0 0 0 4px rgba(32, 178, 170, 0.15); /* Shadow lebih besar */
     background-color: var(--white);
+    transform: translateY(-2px);
 }
 
 .btn {
-    padding: 12px 24px;
+    padding: 16px 32px; /* Padding lebih besar */
     border: none;
-    border-radius: 8px;
-    font-size: 16px;
+    border-radius: 12px; /* Border radius lebih besar */
+    font-size: 17px; /* Font lebih besar */
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.3s ease;
     text-decoration: none;
     display: inline-block;
     text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn:hover::before {
+    left: 100%;
 }
 
 .btn-primary {
-    background-color: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
     color: white;
+    box-shadow: 0 4px 15px rgba(32, 178, 170, 0.3);
 }
 
 .btn-primary:hover {
-    background-color: var(--primary-dark);
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(32, 178, 170, 0.4);
 }
 
 .btn-full {
     width: 100%;
     display: block;
+    padding: 18px; /* Padding lebih besar untuk full button */
 }
 
 .auth-links {
     text-align: center;
-    margin-top: 20px;
-    font-size: 14px;
+    margin-top: 30px; /* Margin lebih besar */
+    font-size: 15px;
 }
 
 .auth-links a {
     color: var(--primary-color);
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.auth-links a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -2px;
+    left: 0;
+    background-color: var(--primary-color);
+    transition: width 0.3s ease;
 }
 
 .auth-links a:hover {
-    text-decoration: underline;
+    color: var(--primary-dark);
+}
+
+.auth-links a:hover::after {
+    width: 100%;
+}
+
+.auth-links p {
+    margin-bottom: 12px;
 }
 
 .message {
-    padding: 12px;
-    border-radius: 8px;
-    margin-bottom: 20px;
+    padding: 16px 20px; /* Padding lebih besar */
+    border-radius: 12px; /* Border radius lebih besar */
+    margin-bottom: 25px;
     text-align: center;
-    font-size: 14px;
+    font-size: 15px;
+    font-weight: 500;
+    border: none;
 }
 
 .success {
-    background-color: #E8F5E9;
+    background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
     color: #2E7D32;
-    border: 1px solid #C8E6C9;
+    box-shadow: 0 4px 15px rgba(46, 125, 50, 0.1);
 }
 
 .error {
-    background-color: #FFEBEE;
+    background: linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 100%);
     color: #C62828;
-    border: 1px solid #FFCDD2;
+    box-shadow: 0 4px 15px rgba(198, 40, 40, 0.1);
 }
 
 .hidden {
     display: none;
 }
 
-@media (max-width: 480px) {
+/* Responsive Design */
+@media (max-width: 768px) {
+    body {
+        padding: 20px 15px;
+    }
+    
     .auth-container {
         max-width: 100%;
+    }
+    
+    .auth-header {
+        padding: 30px 20px;
+    }
+    
+    .auth-header h1 {
+        font-size: 1.7rem;
+    }
+    
+    .auth-form {
+        padding: 30px 25px;
     }
     
     .form-row {
         flex-direction: column;
         gap: 0;
     }
-    
-    .auth-header, .auth-form {
-        padding: 20px;
+}
+
+@media (max-width: 480px) {
+    .auth-header {
+        padding: 25px 20px;
     }
+    
+    .auth-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .auth-header p {
+        font-size: 1rem;
+    }
+    
+    .auth-form {
+        padding: 25px 20px;
+    }
+    
+    input, select {
+        padding: 14px 16px;
+    }
+    
+    .btn {
+        padding: 15px;
+        font-size: 16px;
+    }
+}
+
+/* Tambahan efek visual */
+.auth-card {
+    position: relative;
+}
+
+.auth-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-dark), var(--secondary-color));
 }

@@ -7,43 +7,240 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <!-- GUNAKAN landing-container untuk landing page -->
-    <div class="landing-container">
-        <header class="header">
-            <h1>DITRAHEAL</h1>
-            <p>Sistem Pakar untuk Penyembuhan Trauma Digital</p>
-        </header>
-        
-        <main class="main-content">
-            <div class="hero-section">
-                <h2>Selamat Datang di Platform Penyembuhan Trauma Digital</h2>
-                <p>Sistem pakar kami akan membantu Anda dalam proses penyembuhan trauma melalui assessment yang personal dan rekomendasi yang tepat.</p>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2>DITRAHEAL</h2>
+            </div>
+            <div class="nav-menu">
+                <a href="#home" class="nav-link">Beranda</a>
+                <a href="#features" class="nav-link">Fitur</a>
+                <a href="#about" class="nav-link">Tentang</a>
+                <a href="#how-it-works" class="nav-link">Cara Kerja</a>
+                <a href="/login" class="nav-link btn-login">Masuk</a>
+                <a href="/register" class="nav-link btn-register">Daftar</a>
+            </div>
+            <div class="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-section">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1>Selamat Datang di DITRAHEAL</h1>
+                <h2>Platform Penyembuhan Trauma Digital Berbasis Sistem Pakar</h2>
+                <p>Dapatkan bantuan profesional untuk proses penyembuhan trauma melalui assessment personal, rekomendasi berbasis AI, dan dukungan komunitas yang memahami perjalanan Anda menuju kesembuhan.</p>
                 
-                <div class="cta-buttons">
-                    <a href="/login" class="btn btn-primary">Masuk</a>
-                    <a href="/register" class="btn btn-secondary">Daftar</a>
+                <div class="hero-features">
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span>Assessment Trauma Terstruktur</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span>Rekomendasi Personalisasi</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span>Monitoring Progress Real-time</span>
+                    </div>
+                </div>
+                
+                <div class="hero-buttons">
+                    <a href="/register" class="btn btn-primary">Mulai Sekarang - Gratis</a>
+                    <a href="#how-it-works" class="btn btn-secondary">Lihat Demo</a>
+                </div>
+                
+                <div class="hero-stats">
+                    <div class="stat">
+                        <h3>500+</h3>
+                        <p>Pengguna Terbantu</p>
+                    </div>
+                    <div class="stat">
+                        <h3>95%</h3>
+                        <p>Kepuasan Pengguna</p>
+                    </div>
+                    <div class="stat">
+                        <h3>24/7</h3>
+                        <p>Dukungan Tersedia</p>
+                    </div>
                 </div>
             </div>
-            
-            <div class="features">
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Fitur Unggulan DITRAHEAL</h2>
+                <p>Platform lengkap untuk mendukung perjalanan penyembuhan trauma Anda</p>
+            </div>
+            <div class="features-grid">
                 <div class="feature-card">
-                    <h3>Assessment Trauma</h3>
-                    <p>Identifikasi level trauma melalui kuesioner yang terstruktur</p>
+                    <div class="feature-icon">🔍</div>
+                    <h3>Assessment Trauma Terstruktur</h3>
+                    <p>Kuesioner psikologis yang dirancang oleh ahli untuk mengidentifikasi level dan jenis trauma dengan akurat</p>
                 </div>
                 <div class="feature-card">
-                    <h3>Rekomendasi Personal</h3>
-                    <p>Dapatkan rekomendasi penyembuhan yang sesuai dengan kondisi Anda</p>
+                    <div class="feature-icon">🎯</div>
+                    <h3>Rekomendasi Personalisasi</h3>
+                    <p>Dapatkan rekomendasi treatment yang disesuaikan dengan kondisi dan kebutuhan spesifik Anda</p>
                 </div>
                 <div class="feature-card">
+                    <div class="feature-icon">📊</div>
                     <h3>Monitoring Progress</h3>
-                    <p>Pantau perkembangan penyembuhan Anda secara berkala</p>
+                    <p>Pantau perkembangan penyembuhan Anda dengan dashboard yang informatif dan mudah dipahami</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>Sistem Pakar AI</h3>
+                    <p>Teknologi Artificial Intelligence yang meniru keputusan ahli psikologi trauma berpengalaman</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h3>Dukungan Komunitas</h3>
+                    <p>Terhubung dengan komunitas support system yang memahami perjalanan Anda</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>Akses 24/7</h3>
+                    <p>Platform tersedia kapan saja dan di mana saja untuk mendukung kebutuhan Anda</p>
                 </div>
             </div>
-        </main>
-        
-        <footer class="footer">
-            <p>&copy; 2024 DITRAHEAL. All rights reserved.</p>
-        </footer>
-    </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about-section">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>Tentang DITRAHEAL</h2>
+                    <p>DITRAHEAL adalah sistem pakar revolusioner yang menggabungkan teknologi kecerdasan buatan dengan prinsip-prinsip psikologi klinis untuk memberikan solusi penyembuhan trauma yang efektif dan terjangkau.</p>
+                    <p>Dikembangkan oleh tim ahli yang terdiri dari psikolog klinis, data scientist, dan pengembang perangkat lunak, platform kami telah membantu ratusan pengguna dalam perjalanan penyembuhan mereka.</p>
+                    <div class="about-stats">
+                        <div class="stat">
+                            <h3>500+</h3>
+                            <p>Pengguna Terdaftar</p>
+                        </div>
+                        <div class="stat">
+                            <h3>95%</h3>
+                            <p>Kepuasan Pengguna</p>
+                        </div>
+                        <div class="stat">
+                            <h3>24/7</h3>
+                            <p>Dukungan Tersedia</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-image">
+                    <div class="placeholder-image">
+                        <span>About DITRAHEAL</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="how-it-works-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Bagaimana DITRAHEAL Bekerja?</h2>
+                <p>Proses sederhana menuju penyembuhan yang lebih baik</p>
+            </div>
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Registrasi</h3>
+                    <p>Buat akun gratis dan lengkapi profil Anda</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Assessment</h3>
+                    <p>Isi kuesioner trauma yang komprehensif</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Analisis</h3>
+                    <p>Sistem pakar menganalisis kondisi Anda</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Rekomendasi</h3>
+                    <p>Dapatkan rencana penyembuhan personal</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <h3>Monitoring</h3>
+                    <p>Pantau progress dan sesuaikan treatment</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Siap Memulai Perjalanan Penyembuhan Anda?</h2>
+                <p>Bergabunglah dengan komunitas DITRAHEAL hari ini dan dapatkan dukungan yang Anda butuhkan</p>
+                <div class="cta-buttons">
+                    <a href="/register" class="btn btn-primary">Daftar Sekarang</a>
+                    <a href="/login" class="btn btn-secondary">Masuk</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>DITRAHEAL</h3>
+                    <p>Sistem Pakar Penyembuhan Trauma Digital yang memberikan akses mudah dan terjangkau untuk kesehatan mental yang lebih baik.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#home">Beranda</a></li>
+                        <li><a href="#features">Fitur</a></li>
+                        <li><a href="#about">Tentang</a></li>
+                        <li><a href="#how-it-works">Cara Kerja</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Bantuan</a></li>
+                        <li><a href="#">Kontak</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Kontak</h4>
+                    <ul>
+                        <li>Email: support@ditraheal.com</li>
+                        <li>Telepon: (021) 1234-5678</li>
+                        <li>Alamat: Jakarta, Indonesia</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 DITRAHEAL. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
 </body>
 </html>
