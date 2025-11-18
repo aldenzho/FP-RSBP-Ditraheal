@@ -1,5 +1,6 @@
 # DITRAHEAL - Trauma Healing Expert System
-<img width="1901" height="893" alt="image" src="https://github.com/user-attachments/assets/8f679869-fdc6-4d8f-a893-eeacfe877bc5" />
+<img width="1893" height="913" alt="image" src="https://github.com/user-attachments/assets/8eb1bb5e-715c-4007-91e0-636d89e9ee88" />
+
 
 ## 📋 Deskripsi Sistem Pakar
 DITRAHEAL adalah sebuah Sistem Pakar untuk Penyembuhan Trauma Digital yang dikembangkan menggunakan metode Expert System dengan integrasi media sosial. Sistem ini dirancang untuk membantu proses penyembuhan trauma melalui assessment yang personal dan rekomendasi yang tepat berdasarkan level trauma pengguna.
