@@ -31,7 +31,7 @@ npm (bawaan Node.js)
 
 1. **Clone repository**
 ```bash
-git clone https://github.com/username/trauma-healing-system.git
+git clone https://github.com/username/FP-RSBP-Ditraheal
 cd trauma-healing-system
 ```
 
