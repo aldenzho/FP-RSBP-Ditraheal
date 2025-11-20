@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assessment Trauma - DITRAHEAL</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="assessment-container">
+        <header class="assessment-header">
+            <div>
+                <h1>DITRAHEAL</h1>
+                <p>Assessment Trauma Digital</p>
+            </div>
+            <a href="/dashboard" class="btn btn-secondary">Kembali ke Dashboard</a>
+        </header>
+        
+        <main class="assessment-content">
+            <div class="assessment-info">
+                <h2>Assessment Level Trauma</h2>
+                <p>Silakan jawab pertanyaan berikut dengan jujur sesuai dengan kondisi Anda selama 1 bulan terakhir.</p>
+                <div class="scale-info">
+                    <h3>Skala Penilaian:</h3>
+                    <div class="scale-items">
+                        <div class="scale-item">
+                            <span class="scale-number">1</span>
+                            <span class="scale-label">Sangat Tidak Setuju</span>
+                        </div>
+                        <div class="scale-item">
+                            <span class="scale-number">2</span>
+                            <span class="scale-label">Tidak Setuju</span>
+                        </div>
+                        <div class="scale-item">
+                            <span class="scale-number">3</span>
+                            <span class="scale-label">Netral</span>
+                        </div>
+                        <div class="scale-item">
+                            <span class="scale-number">4</span>
+                            <span class="scale-label">Setuju</span>
+                        </div>
+                        <div class="scale-item">
+                            <span class="scale-number">5</span>
+                            <span class="scale-label">Sangat Setuju</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="assessment-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text">
+                    <span id="currentQuestion">1</span> dari <span id="totalQuestions">5</span> pertanyaan
+                </div>
+            </div>
+
+            <form id="traumaAssessmentForm" class="assessment-form">
+                <!-- Question akan di-load secara dinamis oleh JavaScript -->
+                <div class="question-card" id="questionCard">
+                    <h3 id="questionText">Memuat pertanyaan...</h3>
+                    <div class="rating-scale">
+                        <label class="rating-option">
+                            <input type="radio" name="currentQuestion" value="1" required>
+                            <span class="radio-circle">1</span>
+                            <span class="radio-label-text">Sangat Tidak Setuju</span>
+                        </label>
+                        <label class="rating-option">
+                            <input type="radio" name="currentQuestion" value="2">
+                            <span class="radio-circle">2</span>
+                            <span class="radio-label-text">Tidak Setuju</span>
+                        </label>
+                        <label class="rating-option">
+                            <input type="radio" name="currentQuestion" value="3">
+                            <span class="radio-circle">3</span>
+                            <span class="radio-label-text">Netral</span>
+                        </label>
+                        <label class="rating-option">
+                            <input type="radio" name="currentQuestion" value="4">
+                            <span class="radio-circle">4</span>
+                            <span class="radio-label-text">Setuju</span>
+                        </label>
+                        <label class="rating-option">
+                            <input type="radio" name="currentQuestion" value="5">
+                            <span class="radio-circle">5</span>
+                            <span class="radio-label-text">Sangat Setuju</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="prevButton" style="display: none;">Sebelumnya</button>
+                    <button type="button" class="btn btn-primary" id="nextButton">Selanjutnya</button>
+                    <button type="submit" class="btn btn-primary btn-large" id="submitButton" style="display: none;">Lihat Hasil Assessment</button>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <script src="js/assessment.js"></script>
+</body>
+</html>

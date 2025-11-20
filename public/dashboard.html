@@ -22,6 +22,50 @@
                 <p>Ini adalah dashboard sistem pakar penyembuhan trauma Anda.</p>
             </div>
             
+            <!-- Progress Summary Section -->
+            <div class="progress-summary" id="progressSummary" style="display: none;">
+                <div class="progress-header">
+                    <h3>Progress Penyembuhan Trauma</h3>
+                    <p>Berdasarkan assessment terakhir Anda</p>
+                </div>
+                <div class="progress-cards">
+                    <div class="progress-card">
+                        <div class="progress-info">
+                            <h4>Level Trauma Saat Ini</h4>
+                            <div class="trauma-level-badge" id="currentTraumaLevel">-</div>
+                            <p id="traumaLevelDescription">Belum ada data assessment</p>
+                        </div>
+                    </div>
+                    <div class="progress-card">
+                        <div class="progress-info">
+                            <h4>Skor Assessment</h4>
+                            <div class="score-display" id="currentScore">-</div>
+                            <p>Skor terakhir: <span id="lastScore">0</span>/25</p>
+                        </div>
+                    </div>
+                    <div class="progress-card">
+                        <div class="progress-info">
+                            <h4>Assessment Terakhir</h4>
+                            <div class="date-display" id="lastAssessmentDate">-</div>
+                            <p>Total assessment: <span id="totalAssessments">0</span></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="progress-chart-container">
+                    <canvas id="progressChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- Empty State jika belum ada assessment -->
+            <div class="empty-state" id="emptyState">
+                <div class="empty-content">
+                    <div class="empty-icon">📊</div>
+                    <h3>Belum Ada Data Progress</h3>
+                    <p>Lakukan assessment pertama Anda untuk mulai melacak perkembangan penyembuhan trauma.</p>
+                    <a href="/assessment" class="btn btn-primary">Mulai Assessment Pertama</a>
+                </div>
+            </div>
+            
             <div class="dashboard-cards">
                 <div class="card">
                     <h3>Assessment Trauma</h3>
@@ -32,37 +76,22 @@
                 <div class="card">
                     <h3>Progress Tracking</h3>
                     <p>Pantau perkembangan penyembuhan Anda</p>
-                    <a href="/results" class="btn btn-secondary">Lihat Progress</a>
+                    <a href="/results" class="btn btn-secondary" id="progressButton">Lihat Progress</a>
                 </div>
-                
-                <div class="card">
-                    <h3>Profil Saya</h3>
-                    <p>Kelola informasi profil Anda</p>
-                    <a href="/profile" class="btn btn-secondary">Edit Profil</a>
+            </div>
+
+            <!-- Recent Assessments Section -->
+            <div class="recent-assessments" id="recentAssessments" style="display: none;">
+                <h3>Riwayat Assessment Terbaru</h3>
+                <div class="assessments-list" id="assessmentsList">
+                    <!-- Assessment items will be populated by JavaScript -->
                 </div>
             </div>
         </main>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="js/utils.js"></script>
-    <script>
-        // Check if user is logged in
-        document.addEventListener('DOMContentLoaded', function() {
-            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            if (!currentUser) {
-                window.location.href = '/login';
-                return;
-            }
-            
-            // Display user name
-            document.getElementById('userName').textContent = currentUser.firstName + ' ' + currentUser.lastName;
-        });
-
-        function logout() {
-            localStorage.removeItem('currentUser');
-            localStorage.removeItem('token');
-            window.location.href = '/';
-        }
-    </script>
+    <script src="js/dashboard.js"></script>
 </body>
 </html>

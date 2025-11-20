@@ -289,6 +289,20 @@ app.get('/profile', (req, res) => {
 });
 
 
+app.get('/assessment', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'assessment.html'));
+});
+
+app.get('/results', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'results.html'));
+});
+
+// Di server.js, tambahkan route untuk profile
+app.get('/profile', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'profile.html'));
+});
+
+
 
 // Start server
 app.listen(PORT, () => {

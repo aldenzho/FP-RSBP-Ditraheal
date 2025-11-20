@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hasil Assessment - DITRAHEAL</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="results-container">
+        <header class="results-header">
+            <div>
+                <h1>DITRAHEAL</h1>
+                <p>Hasil Assessment Trauma</p>
+            </div>
+            <div>
+                <a href="/dashboard" class="btn btn-secondary">Dashboard</a>
+                <a href="/assessment" class="btn btn-primary">Assessment Baru</a>
+            </div>
+        </header>
+        
+        <main class="results-content">
+            <div class="results-summary">
+                <h2>Hasil Assessment Anda</h2>
+                <div class="score-display">
+                    <div class="total-score">
+                        <span class="score-number" id="totalScore">0</span>
+                        <span class="score-label">Total Skor</span>
+                    </div>
+                    <div class="trauma-level">
+                        <span class="level-badge" id="traumaLevel">-</span>
+                        <span class="level-label">Level Trauma</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="analysis-section">
+                <div class="analysis-card">
+                    <h3>Analisis Level Trauma</h3>
+                    <div class="progress-container">
+                        <div class="progress-labels">
+                            <span>Rendah</span>
+                            <span>Sedang</span>
+                            <span>Tinggi</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="traumaProgress"></div>
+                        </div>
+                        <div class="progress-marker" id="traumaMarker"></div>
+                    </div>
+                    <p id="traumaDescription" class="trauma-description"></p>
+                </div>
+
+                <div class="analysis-card">
+                    <h3>Rekomendasi Berdasarkan Sistem Pakar</h3>
+                    <div id="recommendations" class="recommendations-list"></div>
+                </div>
+
+                <div class="analysis-card">
+                    <h3>Intervensi yang Disarankan</h3>
+                    <div id="interventions" class="interventions-list"></div>
+                </div>
+
+                <div class="analysis-card">
+                    <h3>Monitoring Progress</h3>
+                    <div class="progress-chart">
+                        <canvas id="progressChart" width="400" height="200"></canvas>
+                    </div>
+                    <p>Disarankan untuk melakukan assessment ulang dalam 2 minggu untuk memantau perkembangan.</p>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <a href="/dashboard" class="btn btn-primary">Kembali ke Dashboard</a>
+                <button onclick="saveResults()" class="btn btn-secondary">Simpan Hasil</button>
+                <button onclick="printResults()" class="btn btn-secondary">Cetak Hasil</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/results.js"></script>
+</body>
+</html>
