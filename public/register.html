@@ -59,6 +59,31 @@
                     <label for="registerPassword">Password</label>
                     <input type="password" id="registerPassword" placeholder="Buat password (min. 6 karakter)" required>
                 </div>
+
+                <div class="form-group">
+                    <label>Pilih Hobi Anda (Untuk Personalisasi Terapi)</label>
+                    
+                    <div class="hobby-selection-grid">
+                        <div class="hobby-card" onclick="selectHobby('Seni', this)">
+                            <span class="hobby-icon">🎨</span> <span class="hobby-label">Seni</span>
+                        </div>
+                        <div class="hobby-card" onclick="selectHobby('Musik', this)">
+                            <span class="hobby-icon">🎵</span>
+                            <span class="hobby-label">Musik</span>
+                        </div>
+                        <div class="hobby-card" onclick="selectHobby('Membaca / Menonton', this)">
+                            <span class="hobby-icon">📚</span>
+                            <span class="hobby-label">Membaca / Menonton</span>
+                        </div>
+                        <div class="hobby-card" onclick="selectHobby('Olahraga', this)">
+                            <span class="hobby-icon">⚽</span>
+                            <span class="hobby-label">Olahraga</span>
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="hobby" name="hobby" required>
+                    <small id="hobby-error" class="error-text" style="display:none; color: red;">Silakan pilih salah satu hobi.</small>
+                </div>
                 
                 <button type="submit" class="btn btn-primary btn-full">Daftar</button>
                 

@@ -37,10 +37,10 @@ try {
 
 // ===== AUTH ROUTES =====
 app.post('/api/auth/register', (req, res) => {
-    const { firstName, lastName, gender, age, instagram, email, password } = req.body;
+    const { firstName, lastName, gender, age, instagram, email, password, hobby } = req.body;
 
     // Validation
-    if (!firstName || !lastName || !gender || !age || !email || !password) {
+    if (!firstName || !lastName || !gender || !age || !email || !password || !hobby) {
         return res.status(400).json({ 
             success: false, 
             message: 'Harap lengkapi semua field!' 
@@ -73,6 +73,7 @@ app.post('/api/auth/register', (req, res) => {
         instagram,
         email,
         password, // In real app, hash this password
+        hobby: hobby,
         createdAt: new Date().toISOString()
     };
 
@@ -124,7 +125,8 @@ app.post('/api/auth/login', (req, res) => {
             email: user.email,
             gender: user.gender,
             age: user.age,
-            instagram: user.instagram
+            instagram: user.instagram,
+            hobby: user.hobby
         },
         token
     });
@@ -160,6 +162,7 @@ app.get('/api/users/profile', (req, res) => {
             gender: user.gender,
             age: user.age,
             instagram: user.instagram,
+            hobby: user.hobby,
             createdAt: user.createdAt
         }
     });

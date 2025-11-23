@@ -8,6 +8,31 @@
     "instagram": "budianto",
     "email": "123@gmail.com",
     "password": "123456",
+    "hobby": "Musik",
     "createdAt": "2025-11-18T12:49:04.786Z"
+  },
+  {
+    "id": "1763913817182",
+    "firstName": "test",
+    "lastName": "1",
+    "gender": "male",
+    "age": 20,
+    "instagram": "test1",
+    "email": "test1@gmail.com",
+    "password": "test123",
+    "hobby": "Musik",
+    "createdAt": "2025-11-23T10:03:37.182Z"
+  },
+  {
+    "id": "1763918610783",
+    "firstName": "test",
+    "lastName": "2",
+    "gender": "male",
+    "age": 20,
+    "instagram": "test2",
+    "email": "test2@gmail.com",
+    "password": "test123",
+    "hobby": "Seni",
+    "createdAt": "2025-11-23T17:23:30.783Z"
   }
 ]

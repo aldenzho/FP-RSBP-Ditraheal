@@ -49,9 +49,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 age: parseInt(document.getElementById('age').value),
                 instagram: document.getElementById('instagram').value,
                 email: document.getElementById('registerEmail').value,
-                password: document.getElementById('registerPassword').value
+                password: document.getElementById('registerPassword').value,
+                hobby: document.getElementById('hobby').value
             };
-            
+
             // Validation
             if (!userData.firstName || !userData.lastName || !userData.gender || !userData.age || !userData.email || !userData.password) {
                 Utils.showMessage('registerMessage', 'Harap lengkapi semua field!', 'error');
@@ -67,6 +68,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 Utils.showMessage('registerMessage', 'Password minimal 6 karakter!', 'error');
                 return;
             }
+
+                if (!hobby) {
+                document.getElementById('hobby-error').style.display = 'block';
+                return;
+            }
             
             const result = await API.register(userData);
             
@@ -80,4 +86,21 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
 });
+
+function selectHobby(value, element) {
+    // 1. Reset semua kartu
+    document.querySelectorAll('.hobby-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+
+    // 2. Tandai kartu yang diklik
+    element.classList.add('selected');
+
+    // 3. Simpan nilai ke input hidden
+    document.getElementById('hobby').value = value;
+    
+    // 4. Sembunyikan error jika ada
+    document.getElementById('hobby-error').style.display = 'none';
+}

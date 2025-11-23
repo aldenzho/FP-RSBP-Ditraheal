@@ -151,6 +151,9 @@ function createProgressChart(results) {
         }
     });
 }
+function goToTreatment() {
+    window.location.href = 'treatment.html';
+}
 
 function saveResults() {
     // In a real app, this would save to a database

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ditraheal - Program Pemulihan</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="results-header">
+            <div>
+                <h1>DITRAHEAL</h1>
+                <p>Tugas Penyembuhan Trauma</p>
+            </div>
+            <div>
+                <a href="/dashboard" class="btn btn-secondary">Dashboard</a>
+            </div>
+        </header>
+
+    <div class="container treatment-container">
+        <header class="treatment-header">
+            <h2>Program Pemulihan Harian Anda</h2>
+            <p id="model-info">Berdasarkan analisa, metode pemulihan Anda adalah: <span class="badge" id="treatment-model-name">-</span></p>
+            
+            <div class="progress-section">
+                <div class="progress-labels">
+                    <span>Progress Harian</span>
+                    <span id="progress-text">0%</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="progress-bar"></div>
+                </div>
+            </div>
+        </header>
+
+        <div id="task-grid" class="task-grid">
+            </div>
+    </div>
+</div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/treatment.js"></script>
+</body>
+</html>
