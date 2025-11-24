@@ -310,11 +310,11 @@ app.get('/profile', (req, res) => {
 // Start server
 app.listen(PORT, () => {
     console.log('='.repeat(60));
-    console.log('🚀 SERVER BERHASIL DIAKTIFKAN');
+    console.log('SERVER BERHASIL DIAKTIFKAN');
     console.log('='.repeat(60));
-    console.log(`📍 Server is running on: http://localhost:${PORT}`);
-    console.log(`📋 Sistem Pakar Penyembuhan Trauma`);
-    console.log(`📁 Data disimpan di: ${dataDir}`);
+    console.log(`Server is running on: http://localhost:${PORT}`);
+    console.log(`Sistem Pakar Penyembuhan Trauma`);
+    console.log(`Data disimpan di: ${dataDir}`);
     console.log('⏰', new Date().toLocaleString('id-ID'));
     console.log('='.repeat(60));
     console.log('Tekan Ctrl+C untuk menghentikan server');
@@ -322,6 +322,7 @@ app.listen(PORT, () => {
 
 // Handle graceful shutdown
 process.on('SIGINT', () => {
-    console.log('\n🛑 Server dimatikan');
+    console.log('\nServer dimatikan');
     process.exit(0);
 });
+
