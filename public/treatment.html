@@ -5,6 +5,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ditraheal - Program Pemulihan</title>
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            padding: 20px 0;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(17, 153, 142, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .save-info {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px auto;
+            max-width: 600px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .save-info strong {
+            font-size: 18px;
+            display: block;
+            margin-bottom: 5px;
+        }
+    </style>
 </head>
 <body>
     <div class="dashboard-container">
@@ -18,26 +85,45 @@
             </div>
         </header>
 
-    <div class="container treatment-container">
-        <header class="treatment-header">
-            <h2>Program Pemulihan Harian Anda</h2>
-            <p id="model-info">Berdasarkan analisa, metode pemulihan Anda adalah: <span class="badge" id="treatment-model-name">-</span></p>
-            
-            <div class="progress-section">
-                <div class="progress-labels">
-                    <span>Progress Harian</span>
-                    <span id="progress-text">0%</span>
+        <div class="container treatment-container">
+            <header class="treatment-header">
+                <h2>Program Pemulihan Harian Anda</h2>
+                <p id="model-info">Berdasarkan analisa, metode pemulihan Anda adalah: <span class="badge" id="treatment-model-name">-</span></p>
+                
+                <div class="progress-section">
+                    <div class="progress-labels">
+                        <span>Progress Harian</span>
+                        <span id="progress-text">0%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" id="progress-bar"></div>
+                    </div>
                 </div>
-                <div class="progress-bar-bg">
-                    <div class="progress-bar-fill" id="progress-bar"></div>
-                </div>
-            </div>
-        </header>
 
-        <div id="task-grid" class="task-grid">
+                <!-- Info Box untuk Preview Perubahan -->
+                <div class="save-info" id="save-preview" style="display: none;">
+                    <strong>📊 Preview Perubahan</strong>
+                    <p id="preview-text">Tugas yang diselesaikan: 0 | Pengurangan Score: 0 poin</p>
+                </div>
+            </header>
+
+            <div id="task-grid" class="task-grid">
             </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button onclick="saveProgress()" class="btn btn-success">
+                    💾 Simpan Progress & Update Score
+                </button>
+                <button onclick="resetTasks()" class="btn btn-primary">
+                    🔄 Reset Tugas Hari Ini
+                </button>
+                <a href="results.html" class="btn btn-primary">
+                    📈 Lihat Hasil Assessment
+                </a>
+            </div>
+        </div>
     </div>
-</div>
 
     <script src="js/utils.js"></script>
     <script src="js/auth.js"></script>
