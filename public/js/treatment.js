@@ -1,32 +1,26 @@
 // public/js/treatment.js
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Ambil Data User dan Hasil Assessment dengan KEY YANG BENAR
-    // PERBAIKAN: Menggunakan 'currentUser' bukan 'user'
+    // 1. Ambil Data User dan Hasil Assessment
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    
-    // PERBAIKAN: Menggunakan 'currentAssessment' bukan 'traumaResult'
     const traumaResult = JSON.parse(localStorage.getItem('currentAssessment'));
 
     // Cek apakah data ada
     if (!currentUser || !traumaResult) {
         alert("Data tidak ditemukan. Silakan login dan lakukan asesmen terlebih dahulu.");
-        // Pastikan path ini benar sesuai struktur folder Anda
         window.location.href = 'dashboard.html'; 
         return;
     }
 
-    // Ambil Hobi (pastikan saat register hobi disimpan di objek currentUser)
-    // Jika di register belum ada hobi, Anda mungkin perlu fallback default sementara
+    // Ambil Hobi
     const userHobby = currentUser.hobby || "Olahraga"; 
-
-    // PERBAIKAN: Menggunakan property .traumaLevel bukan .level
     const traumaLevel = traumaResult.traumaLevel; 
 
-    // Debugging (Opsional: Hapus nanti)
+    // Debugging
     console.log("User:", currentUser.username);
     console.log("Hobby:", userHobby);
     console.log("Level:", traumaLevel);
+    console.log("Initial Score:", traumaResult.totalScore);
 
     // Tampilkan Nama User
     const usernameDisplay = document.getElementById('username-display');
@@ -35,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 2. KNOWLEDGE BASE (Basis Pengetahuan)
-    // Berisi Rule dan Daftar Tugas
     const treatmentKnowledgeBase = {
         "Musik": {
             "Rendah": {
@@ -119,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ]
             }
         },
-"Membaca / Menonton": {
+        "Membaca / Menonton": {
             "Rendah": {
                 modelName: "Literasi & Hiburan Ringan",
                 tasks: [
@@ -203,22 +196,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Fallback data untuk hobi lain agar tidak error (hanya contoh)
+    // Fallback data
     const defaultData = treatmentKnowledgeBase["Olahraga"]["Rendah"];
 
-    // 3. INFERENCE ENGINE (Mesin Pelacakan)
-    // Mencari Rule: IF Hobby AND Level THEN Get Tasks
+    // 3. INFERENCE ENGINE
     let selectedTreatment = null;
     if (treatmentKnowledgeBase[userHobby] && treatmentKnowledgeBase[userHobby][traumaLevel]) {
         selectedTreatment = treatmentKnowledgeBase[userHobby][traumaLevel];
     } else {
-        // Fallback jika kombinasi tidak ditemukan
         console.warn("Rule tidak ditemukan, menggunakan default.");
         selectedTreatment = defaultData; 
     }
 
     // 4. Render UI
     renderTreatmentPage(selectedTreatment);
+    
+    // Update preview setiap kali ada perubahan
+    updateSavePreview();
 });
 
 function renderTreatmentPage(treatmentData) {
@@ -226,9 +220,9 @@ function renderTreatmentPage(treatmentData) {
     const modelNameDisplay = document.getElementById('treatment-model-name');
     
     modelNameDisplay.textContent = treatmentData.modelName;
-    grid.innerHTML = ''; // Clear grid
+    grid.innerHTML = '';
 
-    // Cek progress tersimpan di LocalStorage (agar tidak reset saat refresh)
+    // Cek progress tersimpan di LocalStorage
     const storedProgress = JSON.parse(localStorage.getItem('dailyTaskProgress')) || [];
 
     treatmentData.tasks.forEach((taskText, index) => {
@@ -263,11 +257,13 @@ function toggleTask(index, cardElement) {
         statusText.textContent = 'Belum Selesai';
     }
 
-    // Simpan state ke LocalStorage
+    // Simpan state ke LocalStorage (HANYA STATUS, BELUM UPDATE SCORE)
     let storedProgress = JSON.parse(localStorage.getItem('dailyTaskProgress')) || [];
     
     if (cardElement.classList.contains('completed')) {
-        if (!storedProgress.includes(index)) storedProgress.push(index);
+        if (!storedProgress.includes(index)) {
+            storedProgress.push(index);
+        }
     } else {
         storedProgress = storedProgress.filter(i => i !== index);
     }
@@ -277,6 +273,9 @@ function toggleTask(index, cardElement) {
     // Hitung ulang progress bar
     const totalTasks = cardElement.parentElement.children.length;
     updateProgressBar(totalTasks);
+    
+    // Update preview perubahan
+    updateSavePreview();
 }
 
 function updateProgressBar(totalTasks) {
@@ -287,11 +286,138 @@ function updateProgressBar(totalTasks) {
     const progressBar = document.getElementById('progress-bar');
     const progressText = document.getElementById('progress-text');
 
-    progressBar.style.width = `${percentage}%`;
-    progressText.textContent = `${percentage}%`;
+    if (progressBar && progressText) {
+        progressBar.style.width = `${percentage}%`;
+        progressText.textContent = `${percentage}%`;
+    }
+}
+
+// FUNGSI BARU: Update Preview Perubahan Score
+function updateSavePreview() {
+    const storedProgress = JSON.parse(localStorage.getItem('dailyTaskProgress')) || [];
+    const completedCount = storedProgress.length;
+    const scoreReduction = completedCount * 0.5;
+    
+    const previewBox = document.getElementById('save-preview');
+    const previewText = document.getElementById('preview-text');
+    
+    if (previewBox && previewText) {
+        if (completedCount > 0) {
+            previewBox.style.display = 'block';
+            previewText.textContent = `Tugas yang diselesaikan: ${completedCount} | Pengurangan Score: -${scoreReduction.toFixed(1)} poin`;
+        } else {
+            previewBox.style.display = 'none';
+        }
+    }
+}
+
+// FUNGSI UTAMA: Simpan Progress dan Update Score
+function saveProgress() {
+    const storedProgress = JSON.parse(localStorage.getItem('dailyTaskProgress')) || [];
+    const completedCount = storedProgress.length;
+    
+    if (completedCount === 0) {
+        alert('Belum ada tugas yang diselesaikan. Silakan selesaikan minimal 1 tugas terlebih dahulu.');
+        return;
+    }
+    
+    // Konfirmasi dari user
+    const scoreReduction = completedCount * 0.5;
+    const confirmed = confirm(
+        `Apakah Anda yakin ingin menyimpan progress?\n\n` +
+        `📊 Detail:\n` +
+        `- Tugas diselesaikan: ${completedCount}\n` +
+        `- Pengurangan score: -${scoreReduction.toFixed(1)} poin\n\n` +
+        `Score akan langsung diupdate di hasil assessment Anda.`
+    );
+    
+    if (!confirmed) {
+        return;
+    }
+    
+    // Ambil data assessment saat ini
+    const currentAssessment = JSON.parse(localStorage.getItem('currentAssessment'));
+    
+    if (!currentAssessment) {
+        alert('Data assessment tidak ditemukan. Silakan lakukan assessment terlebih dahulu.');
+        return;
+    }
+    
+    // Simpan score lama untuk log
+    const oldScore = currentAssessment.totalScore;
+    const oldLevel = currentAssessment.traumaLevel;
+    
+    // Update score (dikurangi karena semakin rendah semakin baik)
+    let newScore = oldScore - scoreReduction;
+    
+    // Batasi score minimum 0 dan maksimum 25
+    newScore = Math.max(0, Math.min(25, newScore));
+    
+    currentAssessment.totalScore = newScore;
+    
+    // Tentukan level trauma baru berdasarkan score
+    if (newScore <= 8) {
+        currentAssessment.traumaLevel = 'Rendah';
+    } else if (newScore <= 16) {
+        currentAssessment.traumaLevel = 'Sedang';
+    } else {
+        currentAssessment.traumaLevel = 'Tinggi';
+    }
+    
+    const newLevel = currentAssessment.traumaLevel;
+    
+    // Simpan kembali ke localStorage
+    localStorage.setItem('currentAssessment', JSON.stringify(currentAssessment));
+    
+    // Update assessment history untuk chart
+    updateAssessmentHistory(currentAssessment);
+    
+    // Reset daily progress setelah disimpan
+    localStorage.removeItem('dailyTaskProgress');
+    
+    // Tampilkan hasil
+    alert(
+        `✅ Progress berhasil disimpan!\n\n` +
+        `📊 Perubahan Score:\n` +
+        `- Score Lama: ${oldScore.toFixed(1)} (${oldLevel})\n` +
+        `- Score Baru: ${newScore.toFixed(1)} (${newLevel})\n` +
+        `- Pengurangan: -${scoreReduction.toFixed(1)} poin\n\n` +
+        `Lihat detail di halaman Hasil Assessment!`
+    );
+    
+    // Redirect ke halaman results
+    setTimeout(() => {
+        window.location.href = 'results.html';
+    }, 1000);
+}
+
+// FUNGSI: Update Assessment History untuk Chart
+function updateAssessmentHistory(assessment) {
+    let assessmentHistory = JSON.parse(localStorage.getItem('assessmentHistory')) || [];
+    
+    // Tambahkan entry baru dengan timestamp
+    assessmentHistory.push({
+        userId: assessment.userId,
+        totalScore: assessment.totalScore,
+        traumaLevel: assessment.traumaLevel,
+        date: new Date().toISOString(),
+        source: 'treatment_completion' // Penanda bahwa ini dari penyelesaian treatment
+    });
+    
+    localStorage.setItem('assessmentHistory', JSON.stringify(assessmentHistory));
+}
+
+// FUNGSI: Reset Tugas Hari Ini
+function resetTasks() {
+    const confirmed = confirm('Apakah Anda yakin ingin mereset semua tugas hari ini?\n\nCatatan: Score tidak akan berubah, hanya status tugas yang direset.');
+    
+    if (confirmed) {
+        localStorage.removeItem('dailyTaskProgress');
+        location.reload();
+    }
 }
 
 function logout() {
-    localStorage.removeItem('user');
+    localStorage.removeItem('currentUser');
     window.location.href = 'index.html';
 }
