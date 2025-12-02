@@ -147,12 +147,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (validateCurrentQuestion()) {
             saveCurrentAnswer();
             
-            // Hitung total skor (22-110 karena 22 pertanyaan × 1-5)
             const totalScore = answers.reduce((sum, answer) => sum + answer, 0);
             
-            // Konversi ke skor IES-R standar (0-88)
-            // Rumus: (totalScore - 22) karena min skor = 22, max = 110
-            const iesrScore = totalScore - 22;
+            const iesrScore = totalScore;
             
             // Calculate trauma level dan rekomendasi berdasarkan IES-R
             let traumaLevel = '';
