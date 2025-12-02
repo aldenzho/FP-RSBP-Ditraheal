@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
-    // Get assessment results (SELALU AMBIL DATA TERBARU)
+    // Get assessment results
     const results = JSON.parse(localStorage.getItem('currentAssessment'));
     if (!results) {
         window.location.href = '/assessment';
@@ -17,58 +17,71 @@ document.addEventListener('DOMContentLoaded', function() {
     // Display results
     displayResults(results);
     
-    // FITUR BARU: Auto-refresh setiap 2 detik untuk melihat perubahan compliance
-    setInterval(() => {
-        const updatedResults = JSON.parse(localStorage.getItem('currentAssessment'));
-        if (updatedResults && updatedResults.totalScore !== results.totalScore) {
-            displayResults(updatedResults);
-            // Update reference
-            Object.assign(results, updatedResults);
-        }
-    }, 2000);
-});
-
-function displayResults(results) {
+    // Tambahkan event listener untuk tombol
+    document.getElementById('treatmentBtn').addEventListener('click', goToTreatment);
+});function displayResults(results) {
     // Display total score
     const totalScoreElement = document.getElementById('totalScore');
     if (totalScoreElement) {
-        totalScoreElement.textContent = results.totalScore.toFixed(1);
+        // Tampilkan skor IES-R (0-88) bukan total skor mentah
+        const iesrScore = results.iesrScore || (results.totalScore - 22);
+        totalScoreElement.textContent = iesrScore.toFixed(0);
     }
     
     // Display trauma level with appropriate styling
     const traumaLevelElement = document.getElementById('traumaLevel');
     if (traumaLevelElement) {
+        // Pastikan level trauma sesuai dengan yang dihasilkan di assessment.js
         traumaLevelElement.textContent = results.traumaLevel;
-        traumaLevelElement.className = 'level-badge ' + results.traumaLevel.toLowerCase();
+        // Update class untuk warna yang sesuai
+        traumaLevelElement.className = 'level-badge ' + results.traumaLevel.toLowerCase().replace(/\s+/g, '-');
     }
     
-    // Update progress bar and marker
+    // Update progress bar and marker berdasarkan IES-R yang benar
     const progressFill = document.getElementById('traumaProgress');
     const progressMarker = document.getElementById('traumaMarker');
     
     if (progressFill && progressMarker) {
-        let progressWidth = 0;
-        let markerPosition = 0;
+        const iesrScore = results.iesrScore || (results.totalScore - 22);
         
-        if (results.traumaLevel === 'Rendah') {
-            progressWidth = '33%';
-            markerPosition = 16.5;
-        } else if (results.traumaLevel === 'Sedang') {
-            progressWidth = '66%';
-            markerPosition = 49.5;
+        // Skala IES-R 0-88 dengan 5 kategori yang digunakan di assessment.js:
+        // Rendah (0-23), Ringan (24-32), Sedang (33-36), Tinggi (37-42), Sangat Tinggi (43-88)
+        
+        // Tentukan posisi marker berdasarkan skor aktual (0-100%)
+        const markerPosition = Math.min((iesrScore / 88) * 100, 100);
+        
+        // Tentukan progress width berdasarkan kategori yang sesuai
+        // Kita akan isi progress bar sampai batas kategori
+        let progressWidth = 0;
+        
+        if (iesrScore <= 23) {
+            // Rendah: isi sampai 23/88 = 26.14%
+            progressWidth = (23 / 88) * 100;
+        } else if (iesrScore <= 32) {
+            // Ringan: isi sampai 32/88 = 36.36%
+            progressWidth = (32 / 88) * 100;
+        } else if (iesrScore <= 36) {
+            // Sedang: isi sampai 36/88 = 40.91%
+            progressWidth = (36 / 88) * 100;
+        } else if (iesrScore <= 42) {
+            // Tinggi: isi sampai 42/88 = 47.73%
+            progressWidth = (42 / 88) * 100;
         } else {
-            progressWidth = '100%';
-            markerPosition = 82.5;
+            // Sangat Tinggi: isi penuh
+            progressWidth = 100;
         }
         
-        progressFill.style.width = progressWidth;
+        progressFill.style.width = progressWidth + '%';
         progressMarker.style.left = markerPosition + '%';
+        
+        // Untuk debugging, bisa dihapus setelah fix
+        console.log(`Skor IES-R: ${iesrScore}, Level: ${results.traumaLevel}, Marker: ${markerPosition}%, Progress: ${progressWidth}%`);
     }
     
     // Display trauma description
     const traumaDescElement = document.getElementById('traumaDescription');
     if (traumaDescElement) {
-        traumaDescElement.textContent = getTraumaDescription(results.traumaLevel);
+        traumaDescElement.textContent = results.traumaDescription;
     }
     
     // Display recommendations
@@ -108,16 +121,14 @@ function displayResults(results) {
     if (chartElement) {
         createProgressChart(results);
     }
-    
-    // FITUR BARU: Tampilkan compliance info
-    displayComplianceInfo();
 }
 
 function getTraumaDescription(level) {
     const descriptions = {
         'Rendah': 'Gejala trauma yang Anda alami berada dalam tingkat yang rendah. Ini menunjukkan kemampuan adaptasi yang baik terhadap stres. Tetap pertahankan gaya hidup sehat dan dukungan sosial.',
         'Sedang': 'Anda mengalami beberapa gejala trauma yang memerlukan perhatian. Disarankan untuk mencari dukungan profesional dan menerapkan teknik manajemen stres secara konsisten.',
-        'Tinggi': 'Gejala trauma yang dialami memerlukan penanganan profesional segera. Sangat disarankan untuk berkonsultasi dengan ahli kesehatan mental untuk mendapatkan perawatan yang tepat.'
+        'Tinggi': 'Gejala trauma yang dialami memerlukan penanganan profesional segera. Sangat disarankan untuk berkonsultasi dengan ahli kesehatan mental untuk mendapatkan perawatan yang tepat.',
+        'Sangat Tinggi': 'Gejala trauma yang dialami sangat signifikan dan memerlukan penanganan profesional intensif. Segera konsultasikan dengan ahli kesehatan mental untuk evaluasi mendalam.'
     };
     
     return descriptions[level] || '';
@@ -140,17 +151,20 @@ function createProgressChart(results) {
     
     const dates = userAssessments.map(assessment => {
         const date = new Date(assessment.date);
-        return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+        return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
     });
     
-    const scores = userAssessments.map(assessment => assessment.totalScore);
+    // Gunakan skor IES-R untuk chart
+    const scores = userAssessments.map(assessment => {
+        return assessment.iesrScore || (assessment.totalScore - 22);
+    });
     
     window.traumaChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: dates,
             datasets: [{
-                label: 'Skor Trauma',
+                label: 'Skor IES-R',
                 data: scores,
                 borderColor: '#20B2AA',
                 backgroundColor: 'rgba(32, 178, 170, 0.1)',
@@ -166,7 +180,7 @@ function createProgressChart(results) {
             plugins: {
                 title: {
                     display: true,
-                    text: 'Progress Assessment Trauma',
+                    text: 'Progress Skor IES-R',
                     font: {
                         size: 16
                     }
@@ -177,7 +191,7 @@ function createProgressChart(results) {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return 'Skor: ' + context.parsed.y.toFixed(1);
+                            return 'Skor IES-R: ' + context.parsed.y.toFixed(0);
                         }
                     }
                 }
@@ -185,13 +199,13 @@ function createProgressChart(results) {
             scales: {
                 y: {
                     beginAtZero: true,
-                    max: 25,
+                    max: 88,
                     title: {
                         display: true,
-                        text: 'Skor'
+                        text: 'Skor IES-R (0-88)'
                     },
                     ticks: {
-                        stepSize: 5
+                        stepSize: 10
                     }
                 },
                 x: {
@@ -225,6 +239,7 @@ function updateAssessmentHistory(assessment) {
     assessmentHistory.push({
         userId: assessment.userId,
         totalScore: assessment.totalScore,
+        iesrScore: assessment.iesrScore || (assessment.totalScore - 22),
         traumaLevel: assessment.traumaLevel,
         date: new Date().toISOString()
     });

@@ -1,19 +1,41 @@
-// assessment.js
+// assessment.js - IES-R 22 Item Standard
 document.addEventListener('DOMContentLoaded', function() {
     // Check if user is logged in
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     if (!currentUser) {
-        window.location.href = '/login';
+        window.location.href = 'login.html';
         return;
     }
 
-    // Data pertanyaan assessment
+    // Data pertanyaan IES-R (22 Item Standar) - Skala Likert 1-5
     const questions = [
-        "Saya mengalami kilas balik (flashback) yang mengganggu tentang peristiwa traumatis",
-        "Saya menghindari aktivitas atau situasi yang mengingatkan pada trauma",
-        "Saya merasa mudah terkejut atau gugup",
-        "Saya mengalami kesulitan tidur atau mimpi buruk",
-        "Saya merasa sulit berkonsentrasi atau mengingat hal-hal penting"
+        // SUBSCALA INTRUSI (8 item)
+        "Gambar atau pikiran tentang kejadian itu tiba-tiba muncul dalam pikiran saya",
+        "Saya bermimpi buruk tentang kejadian itu",
+        "Saya tiba-tiba merasa atau bertindak seolah-olah kejadian itu terulang kembali",
+        "Saya merasa sangat terganggu ketika sesuatu mengingatkan saya pada kejadian itu",
+        "Saya memiliki reaksi fisik (seperti jantung berdebar, kesulitan bernapas, berkeringat) ketika mengingat kejadian itu",
+        "Saya mencoba untuk tidak memikirkan atau merasa tentang kejadian itu",
+        "Saya merasa seolah-olah kejadian itu belum terjadi atau tidak nyata",
+        "Saya tidak dapat mengingat beberapa bagian penting dari kejadian itu",
+        
+        // SUBSCALA PENGHINDARAN (8 item)
+        "Saya menjauh dari hal-hal yang mengingatkan saya pada kejadian itu",
+        "Saya menghindari memiliki perasaan tentang kejadian itu",
+        "Saya menyadari bahwa saya masih memiliki banyak perasaan tentang kejadian itu, tetapi tidak berurusan dengan mereka",
+        "Saya mencoba untuk menghapus kejadian itu dari ingatan saya",
+        "Saya memiliki kesulitan untuk tetap tertidur",
+        "Saya mudah tersinggung dan marah",
+        "Saya mengalami kesulitan berkonsentrasi",
+        "Pikiran atau perasaan tentang kejadian itu datang pada waktu yang tidak diinginkan",
+        
+        // SUBSCALA HIPERAROUSAL (6 item)
+        "Saya mudah terkejut",
+        "Saya merasa waspada dan berjaga-jaga",
+        "Saya memiliki perasaan campur aduk tentang kejadian itu",
+        "Saya mencoba untuk tidak membicarakan kejadian itu",
+        "Gambar tentang kejadian itu muncul dalam pikiran saya",
+        "Saya merasa gelisah dan gelisah, seolah-olah selalu waspada terhadap bahaya"
     ];
 
     let currentQuestion = 0;
@@ -119,25 +141,36 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         return true;
     }
-
     function handleFormSubmit(event) {
         event.preventDefault();
         
         if (validateCurrentQuestion()) {
             saveCurrentAnswer();
             
-            // Hitung total skor
+            // Hitung total skor (22-110 karena 22 pertanyaan × 1-5)
             const totalScore = answers.reduce((sum, answer) => sum + answer, 0);
             
-            // Calculate trauma level dan rekomendasi (menggunakan logika dari kode sebelumnya)
+            // Konversi ke skor IES-R standar (0-88)
+            // Rumus: (totalScore - 22) karena min skor = 22, max = 110
+            const iesrScore = totalScore - 22;
+            
+            // Calculate trauma level dan rekomendasi berdasarkan IES-R
             let traumaLevel = '';
             let traumaDescription = '';
             let recommendations = [];
             let interventions = [];
             
-            if (totalScore <= 10) {
+            // RULES SYSTEM berdasarkan IES-R cut-off points YANG BENAR
+            // IES-R Standar cut-off (dalam skor 0-88):
+            // 0-23 = Minimal trauma / Low
+            // 24-32 = Mild trauma / Ringan  
+            // 33-36 = Moderate trauma / Sedang
+            // 37-88 = Severe trauma / Tinggi
+            // 43+ = Very severe trauma / Sangat Tinggi (klinis)
+            
+            if (iesrScore <= 23) {
                 traumaLevel = 'Rendah';
-                traumaDescription = 'Anda menunjukkan gejala trauma yang rendah. Kondisi ini menunjukkan kemampuan koping yang baik dalam menghadapi stres.';
+                traumaDescription = 'Skor IES-R Anda menunjukkan gejala trauma yang rendah (minimal). Kondisi ini menunjukkan kemampuan koping yang baik dalam menghadapi stres. Tetap pertahankan gaya hidup sehat dan dukungan sosial.';
                 recommendations = [
                     {
                         title: 'Pertahankan Gaya Hidup Sehat',
@@ -158,9 +191,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         description: 'Mempertahankan jaringan sosial yang sehat.'
                     }
                 ];
-            } else if (totalScore <= 15) {
-                traumaLevel = 'Sedang';
-                traumaDescription = 'Anda mengalami beberapa gejala trauma yang membutuhkan perhatian. Disarankan untuk mencari dukungan profesional.';
+            } else if (iesrScore <= 32) {
+                traumaLevel = 'Ringan';
+                traumaDescription = 'Skor IES-R Anda menunjukkan gejala trauma ringan. Anda mungkin mengalami beberapa gejala yang mengganggu, namun masih dalam batas yang dapat dikelola dengan strategi koping yang baik.';
                 recommendations = [
                     {
                         title: 'Konsultasi Profesional',
@@ -181,13 +214,36 @@ document.addEventListener('DOMContentLoaded', function() {
                         description: 'Latihan kesadaran penuh untuk mengurangi kecemasan.'
                     }
                 ];
-            } else {
+            } else if (iesrScore <= 36) {
+                traumaLevel = 'Sedang';
+                traumaDescription = 'Skor IES-R Anda menunjukkan gejala trauma yang sedang. Anda mengalami gejala yang signifikan dan disarankan untuk mencari dukungan profesional.';
+                recommendations = [
+                    {
+                        title: 'Konsultasi Profesional',
+                        description: 'Segera konsultasikan dengan psikolog atau konselor untuk evaluasi lebih lanjut.'
+                    },
+                    {
+                        title: 'Manajemen Stres',
+                        description: 'Pelajari teknik manajemen stres yang efektif dan terapkan dalam kehidupan sehari-hari.'
+                    }
+                ];
+                interventions = [
+                    {
+                        title: 'Terapi Kognitif-Perilaku',
+                        description: 'Terapi untuk mengidentifikasi dan mengubah pola pikir serta perilaku negatif.'
+                    },
+                    {
+                        title: 'Kelompok Support',
+                        description: 'Bergabung dengan kelompok dukungan untuk berbagi pengalaman dan strategi koping.'
+                    }
+                ];
+            } else if (iesrScore <= 42) {
                 traumaLevel = 'Tinggi';
-                traumaDescription = 'Anda menunjukkan gejala trauma yang signifikan. Sangat disarankan untuk segera mencari bantuan profesional.';
+                traumaDescription = 'Skor IES-R Anda menunjukkan gejala trauma yang tinggi. Sangat disarankan untuk segera mencari bantuan profesional untuk penanganan yang tepat.';
                 recommendations = [
                     {
                         title: 'Konsultasi Segera',
-                        description: 'Segera hubungi psikolog atau psikiater untuk penanganan profesional.'
+                        description: 'Segera hubungi psikolog klinis atau psikiater untuk penanganan profesional.'
                     },
                     {
                         title: 'Dukungan Sosial',
@@ -200,11 +256,41 @@ document.addEventListener('DOMContentLoaded', function() {
                         description: 'Terapi khusus untuk penanganan trauma yang komprehensif.'
                     },
                     {
-                        title: 'Medical Intervention',
+                        title: 'Medical Consultation',
                         description: 'Konsultasi mengenai kemungkinan intervensi medis jika diperlukan.'
                     }
                 ];
+            } else {
+                traumaLevel = 'Sangat Tinggi';
+                traumaDescription = 'Skor IES-R Anda menunjukkan gejala trauma yang sangat tinggi dan memerlukan perhatian klinis segera. Sangat disarankan untuk mencari bantuan profesional intensif.';
+                recommendations = [
+                    {
+                        title: 'Konsultasi Psikiatri Segera',
+                        description: 'Segera konsultasikan dengan psikiater untuk evaluasi medis mendalam.'
+                    },
+                    {
+                        title: 'Dukungan Intensif',
+                        description: 'Libatkan keluarga dan teman dekat dalam proses pemulihan.'
+                    }
+                ];
+                interventions = [
+                    {
+                        title: 'Terapi Trauma Intensif',
+                        description: 'Terapi khusus untuk penanganan trauma yang komprehensif dan intensif.'
+                    },
+                    {
+                        title: 'Perawatan Medis',
+                        description: 'Konsultasi dan perawatan medis di bawah pengawasan psikiater.'
+                    }
+                ];
             }
+            
+            // Hitung subskala IES-R
+            const subscales = {
+                intrusion: answers.slice(0, 8).reduce((sum, answer) => sum + answer, 0),
+                avoidance: answers.slice(8, 16).reduce((sum, answer) => sum + answer, 0),
+                hyperarousal: answers.slice(16, 22).reduce((sum, answer) => sum + answer, 0)
+            };
             
             // Format answers untuk kompatibilitas dengan kode sebelumnya
             const formattedAnswers = {};
@@ -216,8 +302,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const assessmentResults = {
                 userId: currentUser.id,
                 totalScore: totalScore,
+                iesrScore: iesrScore,
                 traumaLevel: traumaLevel,
                 traumaDescription: traumaDescription,
+                subscales: subscales,
                 answers: formattedAnswers,
                 recommendations: recommendations,
                 interventions: interventions,
@@ -236,7 +324,7 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
             
             // Redirect to results page
-            window.location.href = '/results';
+            window.location.href = 'results.html';
         }
     }
 });
