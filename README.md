@@ -33,7 +33,7 @@ npm (bawaan Node.js)
 1. **Clone repository**
 ```bash
 git clone https://github.com/FP-RSBP-Ditraheal.git
-cd trauma-healing-system
+cd FP-RSBP-DITRAHEAL
 ```
 
 2. **Install dependencies**
