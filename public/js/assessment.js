@@ -9,33 +9,33 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Data pertanyaan IES-R (22 Item Standar) - Skala Likert 1-5
     const questions = [
-        // SUBSCALA INTRUSI (8 item)
-        "Gambar atau pikiran tentang kejadian itu tiba-tiba muncul dalam pikiran saya",
-        "Saya bermimpi buruk tentang kejadian itu",
-        "Saya tiba-tiba merasa atau bertindak seolah-olah kejadian itu terulang kembali",
-        "Saya merasa sangat terganggu ketika sesuatu mengingatkan saya pada kejadian itu",
-        "Saya memiliki reaksi fisik (seperti jantung berdebar, kesulitan bernapas, berkeringat) ketika mengingat kejadian itu",
-        "Saya mencoba untuk tidak memikirkan atau merasa tentang kejadian itu",
-        "Saya merasa seolah-olah kejadian itu belum terjadi atau tidak nyata",
-        "Saya tidak dapat mengingat beberapa bagian penting dari kejadian itu",
+        // ● Intrusion (8 items: 1, 2, 3, 6, 9, 14, 16, 20): intrusive thoughts, nightmares, intrusive feelings, and imagery associated with the traumatic event (range 0-32)
+        "Setiap pengingat membuat saya kembali merasakan perasaan tentang hal itu",
+        "Saya mengalami kesulitan untuk tetap tertidur",
+        "Hal-hal lain terus membuat saya memikirkannya",
+        "Saya memikirkannya tanpa saya maksudkan",
+        "Gambaran tentang itu muncul begitu saja di pikiran saya",
+        "Saya mendapati diri saya bertindak atau merasa seolah-olah saya kembali ke waktu itu",
+        "Saya merasakan gelombang perasaan kuat tentang hal itu",
+        "Saya mengalami mimpi tentang hal itu",
         
-        // SUBSCALA PENGHINDARAN (8 item)
-        "Saya menjauh dari hal-hal yang mengingatkan saya pada kejadian itu",
-        "Saya menghindari memiliki perasaan tentang kejadian itu",
-        "Saya menyadari bahwa saya masih memiliki banyak perasaan tentang kejadian itu, tetapi tidak berurusan dengan mereka",
-        "Saya mencoba untuk menghapus kejadian itu dari ingatan saya",
-        "Saya memiliki kesulitan untuk tetap tertidur",
-        "Saya mudah tersinggung dan marah",
-        "Saya mengalami kesulitan berkonsentrasi",
-        "Pikiran atau perasaan tentang kejadian itu datang pada waktu yang tidak diinginkan",
+        // ● Avoidance (8 items: 5, 7, 8, 11, 12, 13, 17, 22): efforts to avoid trauma-related thoughts, feelings, or reminders, as well as numbing of responsiveness (range 0-32)
+        "Saya menghindari membuat diri saya menjadi sedih ketika saya memikirkannya atau ketika saya diingatkan tentang itu",
+        "Saya merasa seolah-olah itu tidak pernah terjadi atau tidak nyata",
+        "Saya menjauhi hal-hal yang mengingatkan saya tentang itu",
+        "Saya berusaha untuk tidak memikirkannya",
+        "Saya sadar bahwa saya masih memiliki banyak perasaan tentang itu, tetapi saya tidak menanganinya",
+        "Perasaan saya tentang hal itu terasa tumpul atau mati rasa",
+        "Saya berusaha menghapusnya dari ingatan saya",
+        "Saya berusaha untuk tidak membicarakannya",
         
-        // SUBSCALA HIPERAROUSAL (6 item)
-        "Saya mudah terkejut",
-        "Saya merasa waspada dan berjaga-jaga",
-        "Saya memiliki perasaan campur aduk tentang kejadian itu",
-        "Saya mencoba untuk tidak membicarakan kejadian itu",
-        "Gambar tentang kejadian itu muncul dalam pikiran saya",
-        "Saya merasa gelisah dan gelisah, seolah-olah selalu waspada terhadap bahaya"
+        // ● Hyperarousal (6 items: 4, 10, 15, 18, 19, 21): heightened physiological arousal and reactivity following the trauma (range 0-24)
+        "Saya merasa mudah tersinggung dan marah",
+        "Saya mudah terkejut dan mudah kaget",
+        "Saya mengalami kesulitan untuk memulai tidur",
+        "Saya mengalami kesulitan untuk berkonsentrasi",
+        "Pengingat tentang hal itu menyebabkan reaksi fisik, seperti berkeringat, sulit bernapas, mual, atau jantung berdebar",
+        "Saya merasa waspada atau selalu berjaga-jaga"
     ];
 
     let currentQuestion = 0;
@@ -163,7 +163,6 @@ document.addEventListener('DOMContentLoaded', function() {
             // 24-32 = Mild trauma / Ringan  
             // 33-36 = Moderate trauma / Sedang
             // 37-88 = Severe trauma / Tinggi
-            // 43+ = Very severe trauma / Sangat Tinggi (klinis)
             
             if (iesrScore <= 23) {
                 traumaLevel = 'Rendah';
@@ -234,7 +233,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         description: 'Bergabung dengan kelompok dukungan untuk berbagi pengalaman dan strategi koping.'
                     }
                 ];
-            } else if (iesrScore <= 42) {
+            } else if (iesrScore <= 88) {
                 traumaLevel = 'Tinggi';
                 traumaDescription = 'Skor IES-R Anda menunjukkan gejala trauma yang tinggi. Sangat disarankan untuk segera mencari bantuan profesional untuk penanganan yang tepat.';
                 recommendations = [
@@ -255,29 +254,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     {
                         title: 'Medical Consultation',
                         description: 'Konsultasi mengenai kemungkinan intervensi medis jika diperlukan.'
-                    }
-                ];
-            } else {
-                traumaLevel = 'Sangat Tinggi';
-                traumaDescription = 'Skor IES-R Anda menunjukkan gejala trauma yang sangat tinggi dan memerlukan perhatian klinis segera. Sangat disarankan untuk mencari bantuan profesional intensif.';
-                recommendations = [
-                    {
-                        title: 'Konsultasi Psikiatri Segera',
-                        description: 'Segera konsultasikan dengan psikiater untuk evaluasi medis mendalam.'
-                    },
-                    {
-                        title: 'Dukungan Intensif',
-                        description: 'Libatkan keluarga dan teman dekat dalam proses pemulihan.'
-                    }
-                ];
-                interventions = [
-                    {
-                        title: 'Terapi Trauma Intensif',
-                        description: 'Terapi khusus untuk penanganan trauma yang komprehensif dan intensif.'
-                    },
-                    {
-                        title: 'Perawatan Medis',
-                        description: 'Konsultasi dan perawatan medis di bawah pengawasan psikiater.'
                     }
                 ];
             }

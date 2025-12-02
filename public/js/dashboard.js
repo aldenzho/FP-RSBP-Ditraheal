@@ -78,6 +78,7 @@ function updateProgressSummary(latestAssessment, allAssessments) {
 function getTraumaLevelDescription(level) {
     const descriptions = {
         'Rendah': 'Gejala trauma dalam tingkat rendah. Pertahankan gaya hidup sehat.',
+        'Ringan': 'Beberapa gejala trauma terdeteksi, namun masih dapat dikelola. Pertahankan strategi koping yang baik.',
         'Sedang': 'Beberapa gejala trauma terdeteksi. Perlu perhatian dan dukungan.',
         'Tinggi': 'Gejala trauma signifikan. Disarankan konsultasi profesional.'
     };
@@ -159,7 +160,7 @@ function createProgressChart(assessments) {
             scales: {
                 y: {
                     beginAtZero: true,
-                    max: 25,
+                    max: 100,
                     title: {
                         display: true,
                         text: 'Skor Trauma',
@@ -230,7 +231,7 @@ function displayRecentAssessments(assessments) {
                 })}
             </div>
             <div class="assessment-details">
-                <span class="assessment-score">Skor: ${assessment.totalScore}/25</span>
+                <span class="assessment-score">Skor: ${assessment.totalScore}/88</span>
                 <span class="assessment-level ${assessment.traumaLevel.toLowerCase()}">${assessment.traumaLevel}</span>
             </div>
         `;
