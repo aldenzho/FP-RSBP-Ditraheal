@@ -199,7 +199,7 @@ function createProgressChart(results) {
             scales: {
                 y: {
                     beginAtZero: true,
-                    max: 88,
+                    max: 100,
                     title: {
                         display: true,
                         text: 'Skor IES-R (0-88)'
