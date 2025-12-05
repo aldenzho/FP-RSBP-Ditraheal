@@ -3,24 +3,18 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Ambil Data User dan Hasil Assessment
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    const traumaResult = JSON.parse(localStorage.getItem('currentAssessment'));
+    const traumaResult = currentUser ? currentUser.latestAssessment : null;
 
     // Cek apakah data ada
     if (!currentUser || !traumaResult) {
         alert("Data tidak ditemukan. Silakan login dan lakukan asesmen terlebih dahulu.");
-        window.location.href = 'dashboard.html'; 
+        window.location.href = 'dashboard.html';
         return;
     }
 
     // Ambil Hobi
-    const userHobby = currentUser.hobby || "Olahraga"; 
-    const traumaLevel = traumaResult.traumaLevel; 
-
-    // Debugging
-    console.log("User:", currentUser.username);
-    console.log("Hobby:", userHobby);
-    console.log("Level:", traumaLevel);
-    console.log("Initial Score:", traumaResult.totalScore);
+    const userHobby = currentUser.hobby || "Olahraga";
+    const traumaLevel = traumaResult.traumaLevel;
 
     // Tampilkan Nama User
     const usernameDisplay = document.getElementById('username-display');
@@ -205,12 +199,12 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedTreatment = treatmentKnowledgeBase[userHobby][traumaLevel];
     } else {
         console.warn("Rule tidak ditemukan, menggunakan default.");
-        selectedTreatment = defaultData; 
+        selectedTreatment = defaultData;
     }
 
     // 4. Render UI
     renderTreatmentPage(selectedTreatment);
-    
+
     // Update preview setiap kali ada perubahan
     updateSavePreview();
 });
@@ -218,16 +212,16 @@ document.addEventListener('DOMContentLoaded', () => {
 function renderTreatmentPage(treatmentData) {
     const grid = document.getElementById('task-grid');
     const modelNameDisplay = document.getElementById('treatment-model-name');
-    
+
     modelNameDisplay.textContent = treatmentData.modelName;
     grid.innerHTML = '';
 
     // Cek progress tersimpan di LocalStorage
     const storedProgress = JSON.parse(localStorage.getItem('dailyTaskProgress')) || [];
-    
+
     treatmentData.tasks.forEach((taskText, index) => {
         const isCompleted = storedProgress.includes(index);
-        
+
         const card = document.createElement('div');
         card.className = `task-card ${isCompleted ? 'completed' : ''}`;
         card.onclick = () => toggleTask(index, card);
@@ -239,7 +233,7 @@ function renderTreatmentPage(treatmentData) {
             </div>
             <div class="task-status">${isCompleted ? 'Selesai' : 'Belum Selesai'}</div>
         `;
-        
+
         grid.appendChild(card);
     });
 
@@ -248,7 +242,7 @@ function renderTreatmentPage(treatmentData) {
 
 function toggleTask(index, cardElement) {
     cardElement.classList.toggle('completed');
-    
+
     // Update status text visual
     const statusText = cardElement.querySelector('.task-status');
     if (cardElement.classList.contains('completed')) {
@@ -259,7 +253,7 @@ function toggleTask(index, cardElement) {
 
     // Simpan state ke LocalStorage (HANYA STATUS, BELUM UPDATE SCORE)
     let storedProgress = JSON.parse(localStorage.getItem('dailyTaskProgress')) || [];
-    
+
     if (cardElement.classList.contains('completed')) {
         if (!storedProgress.includes(index)) {
             storedProgress.push(index);
@@ -267,7 +261,7 @@ function toggleTask(index, cardElement) {
     } else {
         storedProgress = storedProgress.filter(i => i !== index);
     }
-    
+
     localStorage.setItem('dailyTaskProgress', JSON.stringify(storedProgress));
 
     // Start Debug: print and auto-download storedProgress as JSON
@@ -301,7 +295,7 @@ function toggleTask(index, cardElement) {
     // Hitung ulang progress bar
     const totalTasks = cardElement.parentElement.children.length;
     updateProgressBar(totalTasks);
-    
+
     // Update preview perubahan
     updateSavePreview();
 }
@@ -325,10 +319,10 @@ function updateSavePreview() {
     const storedProgress = JSON.parse(localStorage.getItem('dailyTaskProgress')) || [];
     const completedCount = storedProgress.length;
     const scoreReduction = completedCount * 0.5;
-    
+
     const previewBox = document.getElementById('save-preview');
     const previewText = document.getElementById('preview-text');
-    
+
     if (previewBox && previewText) {
         if (completedCount > 0) {
             previewBox.style.display = 'block';
@@ -343,12 +337,12 @@ function updateSavePreview() {
 function saveProgress() {
     const storedProgress = JSON.parse(localStorage.getItem('dailyTaskProgress')) || [];
     const completedCount = storedProgress.length;
-    
+
     if (completedCount === 0) {
         alert('Belum ada tugas yang diselesaikan. Silakan selesaikan minimal 1 tugas terlebih dahulu.');
         return;
     }
-    
+
     // Konfirmasi dari user
     const scoreReduction = completedCount * 0.5;
     const confirmed = confirm(
@@ -358,31 +352,31 @@ function saveProgress() {
         `- Pengurangan score: -${scoreReduction.toFixed(1)} poin\n\n` +
         `Score akan langsung diupdate di hasil assessment Anda.`
     );
-    
+
     if (!confirmed) {
         return;
     }
-    
+
     // Ambil data assessment saat ini
     const currentAssessment = JSON.parse(localStorage.getItem('currentAssessment'));
-    
+
     if (!currentAssessment) {
         alert('Data assessment tidak ditemukan. Silakan lakukan assessment terlebih dahulu.');
         return;
     }
-    
+
     // Simpan score lama untuk log
     const oldScore = currentAssessment.totalScore;
     const oldLevel = currentAssessment.traumaLevel;
-    
+
     // Update score (dikurangi karena semakin rendah semakin baik)
     let newScore = oldScore - scoreReduction;
-    
+
     // Batasi score minimum 0 dan maksimum 88
     newScore = Math.max(0, Math.min(88, newScore));
-    
+
     currentAssessment.totalScore = newScore;
-    
+
     // Tentukan level trauma baru berdasarkan score
     // RULES SYSTEM berdasarkan IES-R cut-off points YANG BENAR
     // IES-R Standar cut-off (dalam skor 0-88):
@@ -399,18 +393,19 @@ function saveProgress() {
     } else {
         currentAssessment.traumaLevel = 'Tinggi';
     }
-    
+
     const newLevel = currentAssessment.traumaLevel;
-    
-    // Simpan kembali ke localStorage
-    localStorage.setItem('currentAssessment', JSON.stringify(currentAssessment));
-    
+
+    // Update di object user dan simpan ke localStorage
+    currentUser.latestAssessment = currentAssessment;
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
     // Update assessment history untuk chart
     updateAssessmentHistory(currentAssessment);
-    
+
     // Reset daily progress setelah disimpan
     localStorage.removeItem('dailyTaskProgress');
-    
+
     // Tampilkan hasil
     alert(
         `✅ Progress berhasil disimpan!\n\n` +
@@ -420,7 +415,7 @@ function saveProgress() {
         `- Pengurangan: -${scoreReduction.toFixed(1)} poin\n\n` +
         `Lihat detail di halaman Hasil Assessment!`
     );
-    
+
     // Redirect ke halaman results
     setTimeout(() => {
         window.location.href = 'results.html';
@@ -430,7 +425,7 @@ function saveProgress() {
 // FUNGSI: Update Assessment History untuk Chart
 function updateAssessmentHistory(assessment) {
     let assessmentHistory = JSON.parse(localStorage.getItem('assessmentHistory')) || [];
-    
+
     // Tambahkan entry baru dengan timestamp
     assessmentHistory.push({
         userId: assessment.userId,
@@ -444,14 +439,14 @@ function updateAssessmentHistory(assessment) {
         date: new Date().toISOString(),
         source: 'treatment_completion' // Penanda bahwa ini dari penyelesaian treatment
     });
-    
+
     localStorage.setItem('assessmentHistory', JSON.stringify(assessmentHistory));
 }
 
 // FUNGSI: Reset Tugas Hari Ini
 function resetTasks() {
     const confirmed = confirm('Apakah Anda yakin ingin mereset semua tugas hari ini?\n\nCatatan: Score tidak akan berubah, hanya status tugas yang direset.');
-    
+
     if (confirmed) {
         localStorage.removeItem('dailyTaskProgress');
         location.reload();

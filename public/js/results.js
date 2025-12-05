@@ -1,32 +1,32 @@
 // results.js
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Check if user is logged in
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     if (!currentUser) {
         window.location.href = '/login';
         return;
     }
-    
-    // Get assessment results
-    const results = JSON.parse(localStorage.getItem('currentAssessment'));
+
+    // Get assessment results from user profile
+    const results = currentUser.latestAssessment;
     if (!results) {
-        window.location.href = '/assessment';
+        window.location.href = 'assessment.html';
         return;
     }
-    
+
     // Display results
     displayResults(results);
-    
+
     // Tambahkan event listener untuk tombol
     document.getElementById('treatmentBtn').addEventListener('click', goToTreatment);
-});function displayResults(results) {
+}); function displayResults(results) {
     // Display total score
     const totalScoreElement = document.getElementById('totalScore');
     if (totalScoreElement) {
         // Tampilkan skor IES-R (0-88) bukan total skor mentah
         totalScoreElement.textContent = results.totalScore.toFixed(0);
     }
-    
+
     // Display trauma level with appropriate styling
     const traumaLevelElement = document.getElementById('traumaLevel');
     if (traumaLevelElement) {
@@ -35,54 +35,33 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update class untuk warna yang sesuai
         traumaLevelElement.className = 'level-badge ' + results.traumaLevel.toLowerCase().replace(/\s+/g, '-');
     }
-    
+
     // Update progress bar and marker berdasarkan IES-R yang benar
     const progressFill = document.getElementById('traumaProgress');
     const progressMarker = document.getElementById('traumaMarker');
-    
+
     if (progressFill && progressMarker) {
         // Tentukan posisi marker berdasarkan skor aktual (0-100%)
         const markerPosition = Math.min((results.totalScore / 88) * 100, 100);
-        
-        // Tentukan progress width berdasarkan kategori yang sesuai
-        // Kita akan isi progress bar sampai batas kategori
-        let progressWidth = 0;
-        
-        if (results.totalScore <= 23) {
-            // Rendah: isi sampai 23/88 = 26.14%
-            progressWidth = (23 / 88) * 100;
-        } else if (results.totalScore <= 32) {
-            // Ringan: isi sampai 32/88 = 36.36%
-            progressWidth = (32 / 88) * 100;
-        } else if (results.totalScore <= 36) {
-            // Sedang: isi sampai 36/88 = 40.91%
-            progressWidth = (36 / 88) * 100;
-        } else if (results.totalScore <= 42) {
-            // Tinggi: isi sampai 42/88 = 47.73%
-            progressWidth = (42 / 88) * 100;
-        } else {
-            // Sangat Tinggi: isi penuh
-            progressWidth = 100;
-        }
-        
+
+        // Tentukan progress width agar sesuai dengan marker (skor aktual)
+        let progressWidth = markerPosition;
+
         progressFill.style.width = progressWidth + '%';
         progressMarker.style.left = markerPosition + '%';
-        
-        // Untuk debugging, bisa dihapus setelah fix
-        console.log(`Skor IES-R: ${results.totalScore}, Level: ${results.traumaLevel}, Marker: ${markerPosition}%, Progress: ${progressWidth}%`);
     }
-    
+
     // Display trauma description
     const traumaDescElement = document.getElementById('traumaDescription');
     if (traumaDescElement) {
         traumaDescElement.textContent = results.traumaDescription;
     }
-    
+
     // Display recommendations
     const recommendationsContainer = document.getElementById('recommendations');
     if (recommendationsContainer && results.recommendations) {
         recommendationsContainer.innerHTML = '';
-        
+
         results.recommendations.forEach(rec => {
             const recElement = document.createElement('div');
             recElement.className = 'recommendation-item';
@@ -93,12 +72,12 @@ document.addEventListener('DOMContentLoaded', function() {
             recommendationsContainer.appendChild(recElement);
         });
     }
-    
+
     // Display interventions
     const interventionsContainer = document.getElementById('interventions');
     if (interventionsContainer && results.interventions) {
         interventionsContainer.innerHTML = '';
-        
+
         results.interventions.forEach(intervention => {
             const intElement = document.createElement('div');
             intElement.className = 'intervention-item';
@@ -109,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function() {
             interventionsContainer.appendChild(intElement);
         });
     }
-    
+
     // Create progress chart
     const chartElement = document.getElementById('progressChart');
     if (chartElement) {
@@ -124,35 +103,35 @@ function getTraumaDescription(level) {
         'Tinggi': 'Gejala trauma yang dialami memerlukan penanganan profesional segera. Sangat disarankan untuk berkonsultasi dengan ahli kesehatan mental untuk mendapatkan perawatan yang tepat.',
         'Sangat Tinggi': 'Gejala trauma yang dialami sangat signifikan dan memerlukan penanganan profesional intensif. Segera konsultasikan dengan ahli kesehatan mental untuk evaluasi mendalam.'
     };
-    
+
     return descriptions[level] || '';
 }
 
 function createProgressChart(results) {
     const ctx = document.getElementById('progressChart').getContext('2d');
-    
+
     // Hapus chart lama jika ada
     if (window.traumaChart) {
         window.traumaChart.destroy();
     }
-    
+
     // Get assessment history for this user
     const assessmentHistory = JSON.parse(localStorage.getItem('assessmentHistory')) || [];
     const userAssessments = assessmentHistory.filter(assessment => assessment.userId === results.userId);
-    
+
     // Urutkan berdasarkan tanggal
     userAssessments.sort((a, b) => new Date(a.date) - new Date(b.date));
-    
+
     const dates = userAssessments.map(assessment => {
         const date = new Date(assessment.date);
         return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
     });
-    
+
     // Gunakan skor IES-R untuk chart
     const scores = userAssessments.map(assessment => {
         return assessment.totalScore;
     });
-    
+
     window.traumaChart = new Chart(ctx, {
         type: 'line',
         data: {
@@ -184,7 +163,7 @@ function createProgressChart(results) {
                 },
                 tooltip: {
                     callbacks: {
-                        label: function(context) {
+                        label: function (context) {
                             return 'Skor IES-R: ' + context.parsed.y.toFixed(0);
                         }
                     }
@@ -221,14 +200,14 @@ function saveResults() { /* Kurang efektif karena bikin assessment yang sama jad
     // Simpan ke assessment history
     const results = JSON.parse(localStorage.getItem('currentAssessment'));
     if (!results) return;
-    
+
     updateAssessmentHistory(results);
     alert('Hasil assessment telah disimpan. Anda dapat melihat riwayat assessment di dashboard.');
 }
 
 function updateAssessmentHistory(assessment) {
     let assessmentHistory = JSON.parse(localStorage.getItem('assessmentHistory')) || [];
-    
+
     // Tambahkan entry baru
     assessmentHistory.push({
         userId: assessment.userId,
@@ -242,7 +221,7 @@ function updateAssessmentHistory(assessment) {
         date: new Date().toISOString(),
         source: 'save_results' // Penanda bahwa ini dari penyimpanan hasil
     });
-    
+
     localStorage.setItem('assessmentHistory', JSON.stringify(assessmentHistory));
 }
 

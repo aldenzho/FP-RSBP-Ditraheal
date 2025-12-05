@@ -1,5 +1,5 @@
 // assessment.js - IES-R 22 Item Standard
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Check if user is logged in
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     if (!currentUser) {
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
         "Saya mendapati diri saya bertindak atau merasa seolah-olah saya kembali ke waktu itu",
         "Saya merasakan gelombang perasaan kuat tentang hal itu",
         "Saya mengalami mimpi tentang hal itu",
-        
+
         // ● Avoidance (8 items: 5, 7, 8, 11, 12, 13, 17, 22): efforts to avoid trauma-related thoughts, feelings, or reminders, as well as numbing of responsiveness (range 0-32)
         "Saya menghindari membuat diri saya menjadi sedih ketika saya memikirkannya atau ketika saya diingatkan tentang itu",
         "Saya merasa seolah-olah itu tidak pernah terjadi atau tidak nyata",
@@ -28,32 +28,42 @@ document.addEventListener('DOMContentLoaded', function() {
         "Perasaan saya tentang hal itu terasa tumpul atau mati rasa",
         "Saya berusaha menghapusnya dari ingatan saya",
         "Saya berusaha untuk tidak membicarakannya",
-        
+
         // ● Hyperarousal (6 items: 4, 10, 15, 18, 19, 21): heightened physiological arousal and reactivity following the trauma (range 0-24)
         "Saya merasa mudah tersinggung dan marah",
         "Saya mudah terkejut dan mudah kaget",
         "Saya mengalami kesulitan untuk memulai tidur",
         "Saya mengalami kesulitan untuk berkonsentrasi",
         "Pengingat tentang hal itu menyebabkan reaksi fisik, seperti berkeringat, sulit bernapas, mual, atau jantung berdebar",
-        "Saya merasa waspada atau selalu berjaga-jaga"
+        "Saya merasa waspada atau selalu berjaga-jaga",
+
+        // Pertanyaan Tambahan: Hobi (Index 22)
+        "Apa hobi atau aktivitas yang paling Anda nikmati?"
     ];
 
     let currentQuestion = 0;
     const answers = [];
+    let likertScaleHTML = ''; // Store original scale HTML
+
+    // Capture original Likert scale HTML on load
+    const ratingScale = document.querySelector('.rating-scale');
+    if (ratingScale) {
+        likertScaleHTML = ratingScale.innerHTML;
+    }
 
     // Initialize assessment
     updateProgress();
     showQuestion();
-    
+
     // Event listeners untuk tombol
     document.getElementById('prevButton').addEventListener('click', goToPreviousQuestion);
     document.getElementById('nextButton').addEventListener('click', goToNextQuestion);
     document.getElementById('traumaAssessmentForm').addEventListener('submit', handleFormSubmit);
-    
+
     // Event listener untuk radio buttons
     const radioInputs = document.querySelectorAll('input[name="currentQuestion"]');
     radioInputs.forEach(radio => {
-        radio.addEventListener('change', function() {
+        radio.addEventListener('change', function () {
             document.getElementById('nextButton').disabled = false;
         });
     });
@@ -65,18 +75,73 @@ document.addEventListener('DOMContentLoaded', function() {
         const submitButton = document.getElementById('submitButton');
         const currentQuestionSpan = document.getElementById('currentQuestion');
         const totalQuestionsSpan = document.getElementById('totalQuestions');
-        
+
         // Update teks pertanyaan
         questionText.textContent = `${currentQuestion + 1}. ${questions[currentQuestion]}`;
         currentQuestionSpan.textContent = currentQuestion + 1;
         totalQuestionsSpan.textContent = questions.length;
-        
-        // Reset radio buttons
-        const radioInputs = document.querySelectorAll('input[name="currentQuestion"]');
-        radioInputs.forEach(radio => {
-            radio.checked = false;
-        });
-        
+
+        // Render UI Pertanyaan
+        const ratingScaleContainer = document.querySelector('.rating-scale');
+
+        if (currentQuestion === questions.length - 1) {
+            // Ini adalah pertanyaan Hobi (terakhir)
+            // Render pilihan hobi
+            ratingScaleContainer.innerHTML = `
+                <label class="rating-option">
+                    <input type="radio" name="currentQuestion" value="Musik" required>
+                    <span class="radio-circle" style="font-size: 1.2rem;">🎵</span>
+                    <span class="radio-label-text">Musik</span>
+                </label>
+                <label class="rating-option">
+                    <input type="radio" name="currentQuestion" value="Seni">
+                    <span class="radio-circle" style="font-size: 1.2rem;">🎨</span>
+                    <span class="radio-label-text">Seni</span>
+                </label>
+                <label class="rating-option">
+                    <input type="radio" name="currentQuestion" value="Membaca / Menonton">
+                    <span class="radio-circle" style="font-size: 1.2rem;">📚</span>
+                    <span class="radio-label-text">Membaca / Menonton</span>
+                </label>
+                <label class="rating-option">
+                    <input type="radio" name="currentQuestion" value="Olahraga">
+                    <span class="radio-circle" style="font-size: 1.2rem;">⚽</span>
+                    <span class="radio-label-text">Olahraga</span>
+                </label>
+                <!-- Opsi tambahan untuk memastikan layout konsisten -->
+            `;
+
+            // Re-attach event listeners for new radio buttons
+            const newRadios = document.querySelectorAll('input[name="currentQuestion"]');
+            newRadios.forEach(radio => {
+                radio.addEventListener('change', function () {
+                    document.getElementById('nextButton').disabled = false;
+                    // Auto-focus atau style perubahan bisa ditambahkan di sini
+                });
+            });
+
+        } else {
+            // Ini adalah pertanyaan IES-R biasa
+            // Restore Likert scale structure if needed
+            if (!ratingScaleContainer.innerHTML.includes('value="4"')) {
+                ratingScaleContainer.innerHTML = likertScaleHTML;
+
+                // Re-attach event listeners for restored radio buttons
+                const restoredRadios = document.querySelectorAll('input[name="currentQuestion"]');
+                restoredRadios.forEach(radio => {
+                    radio.addEventListener('change', function () {
+                        document.getElementById('nextButton').disabled = false;
+                    });
+                });
+            }
+
+            // Reset radio buttons untuk pertanyaan baru
+            const radioInputs = document.querySelectorAll('input[name="currentQuestion"]');
+            radioInputs.forEach(radio => {
+                radio.checked = false;
+            });
+        }
+
         // Tampilkan jawaban sebelumnya jika ada
         if (answers[currentQuestion] !== undefined) {
             const previousAnswer = document.querySelector(`input[name="currentQuestion"][value="${answers[currentQuestion]}"]`);
@@ -87,10 +152,10 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             nextButton.disabled = true;
         }
-        
+
         // Update tombol navigasi
         prevButton.style.display = currentQuestion > 0 ? 'inline-block' : 'none';
-        
+
         if (currentQuestion === questions.length - 1) {
             nextButton.style.display = 'none';
             submitButton.style.display = 'inline-block';
@@ -98,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
             nextButton.style.display = 'inline-block';
             submitButton.style.display = 'none';
         }
-        
+
         updateProgress();
     }
 
@@ -129,7 +194,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function saveCurrentAnswer() {
         const selectedRadio = document.querySelector('input[name="currentQuestion"]:checked');
         if (selectedRadio) {
-            answers[currentQuestion] = parseInt(selectedRadio.value);
+            // Jika pertanyaan terakhir (Hobi), simpan string. Jika IES-R, simpan integer.
+            const val = selectedRadio.value;
+            if (currentQuestion === questions.length - 1) {
+                answers[currentQuestion] = val; // Simpan "Musik", "Seni", dll.
+            } else {
+                answers[currentQuestion] = parseInt(val);
+            }
         }
     }
 
@@ -143,25 +214,35 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     function handleFormSubmit(event) {
         event.preventDefault();
-        
+
         if (validateCurrentQuestion()) {
             saveCurrentAnswer();
-            
-            const totalScore = answers.reduce((sum, answer) => sum + answer, 0);
-            
+
+            // Pisahkan jawaban IES-R (0-21) dan jawaban Hobi (22)
+            const iesrAnswers = answers.slice(0, 22);
+            const hobbyAnswer = answers[22];
+
+            const totalScore = iesrAnswers.reduce((sum, answer) => sum + (typeof answer === 'number' ? answer : 0), 0);
+
+            // Simpan Hobi ke Current User
+            if (hobbyAnswer) {
+                currentUser.hobby = hobbyAnswer;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            }
+
             // Calculate trauma level dan rekomendasi berdasarkan IES-R
             let traumaLevel = '';
             let traumaDescription = '';
             let recommendations = [];
             let interventions = [];
-            
+
             // RULES SYSTEM berdasarkan IES-R cut-off points YANG BENAR
             // IES-R Standar cut-off (dalam skor 0-88):
             // 0-23 = Minimal trauma / Low
             // 24-32 = Mild trauma / Ringan  
             // 33-36 = Moderate trauma / Sedang
             // 37-88 = Severe trauma / Tinggi
-            
+
             if (totalScore <= 23) {
                 traumaLevel = 'Rendah';
                 traumaDescription = 'Skor IES-R Anda menunjukkan gejala trauma yang rendah (minimal). Kondisi ini menunjukkan kemampuan koping yang baik dalam menghadapi stres. Tetap pertahankan gaya hidup sehat dan dukungan sosial.';
@@ -255,20 +336,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 ];
             }
-            
-            // Hitung subskala IES-R
+
+            // Hitung subskala IES-R (Gunakan iesrAnswers yang sudah dipotong)
             const subscales = {
-                intrusion: answers.slice(0, 8).reduce((sum, answer) => sum + answer, 0),
-                avoidance: answers.slice(8, 16).reduce((sum, answer) => sum + answer, 0),
-                hyperarousal: answers.slice(16, 22).reduce((sum, answer) => sum + answer, 0)
+                intrusion: iesrAnswers.slice(0, 8).reduce((sum, answer) => sum + answer, 0),
+                avoidance: iesrAnswers.slice(8, 16).reduce((sum, answer) => sum + answer, 0),
+                hyperarousal: iesrAnswers.slice(16, 22).reduce((sum, answer) => sum + answer, 0)
             };
-            
+
+            // Format answers untuk kompatibilitas dengan kode sebelumnya
             // Format answers untuk kompatibilitas dengan kode sebelumnya
             const formattedAnswers = {};
-            answers.forEach((answer, index) => {
+            iesrAnswers.forEach((answer, index) => {
                 formattedAnswers[`question${index + 1}`] = answer;
             });
-            
+
             // Save results to localStorage
             const assessmentResults = {
                 userId: currentUser.id,
@@ -282,18 +364,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 date: new Date().toISOString(),
                 source: 'assessment_completion'
             };
-            
-            localStorage.setItem('currentAssessment', JSON.stringify(assessmentResults));
-            
+
             // Save to assessment history
             let assessmentHistory = JSON.parse(localStorage.getItem('assessmentHistory')) || [];
             assessmentHistory.push(assessmentResults);
             localStorage.setItem('assessmentHistory', JSON.stringify(assessmentHistory));
-            
+
             // Update user's latest assessment
             currentUser.latestAssessment = assessmentResults;
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            
+
             // Redirect to results page
             window.location.href = 'results.html';
         }

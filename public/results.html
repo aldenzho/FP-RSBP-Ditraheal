@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DITRAHEAL</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
     <div class="results-container">
         <header class="results-header">
@@ -18,7 +20,7 @@
                 <a href="/assessment" class="btn btn-primary">Assessment Baru</a>
             </div>
         </header>
-        
+
         <main class="results-content">
             <div class="results-summary">
                 <h2>Hasil Assessment Anda</h2>
@@ -38,11 +40,15 @@
                 <div class="analysis-card">
                     <h3>Analisis Level Trauma</h3>
                     <div class="progress-container">
-                        <div class="progress-labels">
-                            <span>Rendah</span>
-                            <span>Ringan</span>
-                            <span>Sedang</span>
-                            <span>Tinggi</span>
+                        <div class="progress-labels" style="position: relative; height: 25px; margin-bottom: 5px;">
+                            <span
+                                style="position: absolute; left: 13.06%; transform: translateX(-50%); font-size: 0.85rem;">Rendah</span>
+                            <span
+                                style="position: absolute; left: 31.81%; transform: translateX(-50%); font-size: 0.85rem;">Ringan</span>
+                            <span
+                                style="position: absolute; left: 39.20%; transform: translateX(-50%); font-size: 0.85rem;">Sedang</span>
+                            <span
+                                style="position: absolute; left: 71.02%; transform: translateX(-50%); font-size: 0.85rem;">Tinggi</span>
                         </div>
                         <div class="progress-bar">
                             <div class="progress-fill" id="traumaProgress"></div>
@@ -86,4 +92,5 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="js/results.js"></script>
 </body>
+
 </html>
