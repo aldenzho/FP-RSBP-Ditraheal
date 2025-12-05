@@ -217,7 +217,7 @@ function goToTreatment() {
     window.location.href = 'treatment.html';
 }
 
-function saveResults() {
+function saveResults() { /* Kurang efektif karena bikin assessment yang sama jadi duplikat */
     // Simpan ke assessment history
     const results = JSON.parse(localStorage.getItem('currentAssessment'));
     if (!results) return;
@@ -233,9 +233,14 @@ function updateAssessmentHistory(assessment) {
     assessmentHistory.push({
         userId: assessment.userId,
         totalScore: assessment.totalScore,
-        // iesrScore: assessment.iesrScore || (assessment.totalScore - 22),
         traumaLevel: assessment.traumaLevel,
-        date: new Date().toISOString()
+        traumaDescription: assessment.traumaDescription,
+        subscales: assessment.subscales,
+        answers: assessment.formattedAnswers,
+        recommendations: assessment.recommendations,
+        interventions: assessment.interventions,
+        date: new Date().toISOString(),
+        source: 'save_results' // Penanda bahwa ini dari penyimpanan hasil
     });
     
     localStorage.setItem('assessmentHistory', JSON.stringify(assessmentHistory));

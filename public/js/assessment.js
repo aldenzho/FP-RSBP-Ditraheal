@@ -279,7 +279,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 answers: formattedAnswers,
                 recommendations: recommendations,
                 interventions: interventions,
-                date: new Date().toISOString()
+                date: new Date().toISOString(),
+                source: 'assessment_completion'
             };
             
             localStorage.setItem('currentAssessment', JSON.stringify(assessmentResults));

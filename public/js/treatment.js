@@ -224,7 +224,7 @@ function renderTreatmentPage(treatmentData) {
 
     // Cek progress tersimpan di LocalStorage
     const storedProgress = JSON.parse(localStorage.getItem('dailyTaskProgress')) || [];
-
+    
     treatmentData.tasks.forEach((taskText, index) => {
         const isCompleted = storedProgress.includes(index);
         
@@ -269,6 +269,34 @@ function toggleTask(index, cardElement) {
     }
     
     localStorage.setItem('dailyTaskProgress', JSON.stringify(storedProgress));
+
+    // Start Debug: print and auto-download storedProgress as JSON
+    // try {
+    //     const json = JSON.stringify(storedProgress, null, 2);
+    //     const blob = new Blob([json], { type: 'application/json' });
+    //     const url = URL.createObjectURL(blob);
+    //     const a = document.createElement('a');
+    //     a.href = url;
+    //     a.download = 'storedProgress.json';
+    //     document.body.appendChild(a);
+    //     a.click();
+    //     a.remove();
+    //     URL.revokeObjectURL(url);
+    // } catch (e) {
+    //     console.error('Failed to create JSON download for storedProgress', e);
+    //     try {
+    //         const text = String(storedProgress).slice(0, 10000);
+    //         if (navigator.clipboard && navigator.clipboard.writeText) {
+    //             navigator.clipboard.writeText(text);
+    //             alert('Auto-download failed. A portion of the data was copied to clipboard.');
+    //         } else {
+    //             alert('Auto-download failed. See console for details.');
+    //         }
+    //     } catch (e2) {
+    //         alert('Failed to export storedProgress. See console for details.');
+    //     }
+    // }
+    // End Debug
 
     // Hitung ulang progress bar
     const totalTasks = cardElement.parentElement.children.length;
@@ -356,9 +384,17 @@ function saveProgress() {
     currentAssessment.totalScore = newScore;
     
     // Tentukan level trauma baru berdasarkan score
-    if (newScore <= 8) {
+    // RULES SYSTEM berdasarkan IES-R cut-off points YANG BENAR
+    // IES-R Standar cut-off (dalam skor 0-88):
+    // 0-23 = Minimal trauma / Low
+    // 24-32 = Mild trauma / Ringan  
+    // 33-36 = Moderate trauma / Sedang
+    // 37-88 = Severe trauma / Tinggi
+    if (newScore <= 23) {
         currentAssessment.traumaLevel = 'Rendah';
-    } else if (newScore <= 16) {
+    } else if (newScore <= 32) {
+        currentAssessment.traumaLevel = 'Ringan';
+    } else if (newScore <= 36) {
         currentAssessment.traumaLevel = 'Sedang';
     } else {
         currentAssessment.traumaLevel = 'Tinggi';
@@ -400,6 +436,11 @@ function updateAssessmentHistory(assessment) {
         userId: assessment.userId,
         totalScore: assessment.totalScore,
         traumaLevel: assessment.traumaLevel,
+        traumaDescription: assessment.traumaDescription,
+        subscales: assessment.subscales,
+        answers: assessment.formattedAnswers,
+        recommendations: assessment.recommendations,
+        interventions: assessment.interventions,
         date: new Date().toISOString(),
         source: 'treatment_completion' // Penanda bahwa ini dari penyelesaian treatment
     });

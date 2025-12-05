@@ -20,6 +20,34 @@ function loadProgressData() {
     
     // Filter assessments for current user
     const userAssessments = assessmentHistory.filter(assessment => assessment.userId === currentUser.id);
+
+    // Start Debug: print and auto-download userAssessments as JSON
+    // try {
+    //     const json = JSON.stringify(userAssessments, null, 2);
+    //     const blob = new Blob([json], { type: 'application/json' });
+    //     const url = URL.createObjectURL(blob);
+    //     const a = document.createElement('a');
+    //     a.href = url;
+    //     a.download = 'userAssessments.json';
+    //     document.body.appendChild(a);
+    //     a.click();
+    //     a.remove();
+    //     URL.revokeObjectURL(url);
+    // } catch (e) {
+    //     console.error('Failed to create JSON download for userAssessments', e);
+    //     try {
+    //         const text = String(userAssessments).slice(0, 10000);
+    //         if (navigator.clipboard && navigator.clipboard.writeText) {
+    //             navigator.clipboard.writeText(text);
+    //             alert('Auto-download failed. A portion of the data was copied to clipboard.');
+    //         } else {
+    //             alert('Auto-download failed. See console for details.');
+    //         }
+    //     } catch (e2) {
+    //         alert('Failed to export userAssessments. See console for details.');
+    //     }
+    // }
+    // End Debug
     
     if (userAssessments.length === 0) {
         // Show empty state
