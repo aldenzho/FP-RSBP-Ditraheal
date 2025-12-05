@@ -24,8 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const totalScoreElement = document.getElementById('totalScore');
     if (totalScoreElement) {
         // Tampilkan skor IES-R (0-88) bukan total skor mentah
-        const iesrScore = results.iesrScore || (results.totalScore - 22);
-        totalScoreElement.textContent = iesrScore.toFixed(0);
+        totalScoreElement.textContent = results.totalScore.toFixed(0);
     }
     
     // Display trauma level with appropriate styling
@@ -42,28 +41,23 @@ document.addEventListener('DOMContentLoaded', function() {
     const progressMarker = document.getElementById('traumaMarker');
     
     if (progressFill && progressMarker) {
-        const iesrScore = results.iesrScore || (results.totalScore - 22);
-        
-        // Skala IES-R 0-88 dengan 5 kategori yang digunakan di assessment.js:
-        // Rendah (0-23), Ringan (24-32), Sedang (33-36), Tinggi (37-42), Sangat Tinggi (43-88)
-        
         // Tentukan posisi marker berdasarkan skor aktual (0-100%)
-        const markerPosition = Math.min((iesrScore / 88) * 100, 100);
+        const markerPosition = Math.min((results.totalScore / 88) * 100, 100);
         
         // Tentukan progress width berdasarkan kategori yang sesuai
         // Kita akan isi progress bar sampai batas kategori
         let progressWidth = 0;
         
-        if (iesrScore <= 23) {
+        if (results.totalScore <= 23) {
             // Rendah: isi sampai 23/88 = 26.14%
             progressWidth = (23 / 88) * 100;
-        } else if (iesrScore <= 32) {
+        } else if (results.totalScore <= 32) {
             // Ringan: isi sampai 32/88 = 36.36%
             progressWidth = (32 / 88) * 100;
-        } else if (iesrScore <= 36) {
+        } else if (results.totalScore <= 36) {
             // Sedang: isi sampai 36/88 = 40.91%
             progressWidth = (36 / 88) * 100;
-        } else if (iesrScore <= 42) {
+        } else if (results.totalScore <= 42) {
             // Tinggi: isi sampai 42/88 = 47.73%
             progressWidth = (42 / 88) * 100;
         } else {
@@ -75,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
         progressMarker.style.left = markerPosition + '%';
         
         // Untuk debugging, bisa dihapus setelah fix
-        console.log(`Skor IES-R: ${iesrScore}, Level: ${results.traumaLevel}, Marker: ${markerPosition}%, Progress: ${progressWidth}%`);
+        console.log(`Skor IES-R: ${results.totalScore}, Level: ${results.traumaLevel}, Marker: ${markerPosition}%, Progress: ${progressWidth}%`);
     }
     
     // Display trauma description
@@ -156,7 +150,7 @@ function createProgressChart(results) {
     
     // Gunakan skor IES-R untuk chart
     const scores = userAssessments.map(assessment => {
-        return assessment.iesrScore || (assessment.totalScore - 22);
+        return assessment.totalScore;
     });
     
     window.traumaChart = new Chart(ctx, {
@@ -239,7 +233,7 @@ function updateAssessmentHistory(assessment) {
     assessmentHistory.push({
         userId: assessment.userId,
         totalScore: assessment.totalScore,
-        iesrScore: assessment.iesrScore || (assessment.totalScore - 22),
+        // iesrScore: assessment.iesrScore || (assessment.totalScore - 22),
         traumaLevel: assessment.traumaLevel,
         date: new Date().toISOString()
     });

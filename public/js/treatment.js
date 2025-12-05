@@ -350,8 +350,8 @@ function saveProgress() {
     // Update score (dikurangi karena semakin rendah semakin baik)
     let newScore = oldScore - scoreReduction;
     
-    // Batasi score minimum 0 dan maksimum 25
-    newScore = Math.max(0, Math.min(25, newScore));
+    // Batasi score minimum 0 dan maksimum 88
+    newScore = Math.max(0, Math.min(88, newScore));
     
     currentAssessment.totalScore = newScore;
     
