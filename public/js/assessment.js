@@ -149,8 +149,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const totalScore = answers.reduce((sum, answer) => sum + answer, 0);
             
-            const iesrScore = totalScore;
-            
             // Calculate trauma level dan rekomendasi berdasarkan IES-R
             let traumaLevel = '';
             let traumaDescription = '';
@@ -164,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // 33-36 = Moderate trauma / Sedang
             // 37-88 = Severe trauma / Tinggi
             
-            if (iesrScore <= 23) {
+            if (totalScore <= 23) {
                 traumaLevel = 'Rendah';
                 traumaDescription = 'Skor IES-R Anda menunjukkan gejala trauma yang rendah (minimal). Kondisi ini menunjukkan kemampuan koping yang baik dalam menghadapi stres. Tetap pertahankan gaya hidup sehat dan dukungan sosial.';
                 recommendations = [
@@ -187,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         description: 'Mempertahankan jaringan sosial yang sehat.'
                     }
                 ];
-            } else if (iesrScore <= 32) {
+            } else if (totalScore <= 32) {
                 traumaLevel = 'Ringan';
                 traumaDescription = 'Skor IES-R Anda menunjukkan gejala trauma ringan. Anda mungkin mengalami beberapa gejala yang mengganggu, namun masih dalam batas yang dapat dikelola dengan strategi koping yang baik.';
                 recommendations = [
@@ -210,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         description: 'Latihan kesadaran penuh untuk mengurangi kecemasan.'
                     }
                 ];
-            } else if (iesrScore <= 36) {
+            } else if (totalScore <= 36) {
                 traumaLevel = 'Sedang';
                 traumaDescription = 'Skor IES-R Anda menunjukkan gejala trauma yang sedang. Anda mengalami gejala yang signifikan dan disarankan untuk mencari dukungan profesional.';
                 recommendations = [
@@ -233,7 +231,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         description: 'Bergabung dengan kelompok dukungan untuk berbagi pengalaman dan strategi koping.'
                     }
                 ];
-            } else if (iesrScore <= 88) {
+            } else if (totalScore <= 88) {
                 traumaLevel = 'Tinggi';
                 traumaDescription = 'Skor IES-R Anda menunjukkan gejala trauma yang tinggi. Sangat disarankan untuk segera mencari bantuan profesional untuk penanganan yang tepat.';
                 recommendations = [
@@ -275,7 +273,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const assessmentResults = {
                 userId: currentUser.id,
                 totalScore: totalScore,
-                iesrScore: iesrScore,
                 traumaLevel: traumaLevel,
                 traumaDescription: traumaDescription,
                 subscales: subscales,
