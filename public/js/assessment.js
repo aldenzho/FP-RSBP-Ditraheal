@@ -37,8 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
         "Pengingat tentang hal itu menyebabkan reaksi fisik, seperti berkeringat, sulit bernapas, mual, atau jantung berdebar",
         "Saya merasa waspada atau selalu berjaga-jaga",
 
-        // Pertanyaan Tambahan: Hobi (Index 22)
-        "Apa hobi atau aktivitas yang paling Anda nikmati?"
+
     ];
 
     let currentQuestion = 0;
@@ -84,63 +83,25 @@ document.addEventListener('DOMContentLoaded', function () {
         // Render UI Pertanyaan
         const ratingScaleContainer = document.querySelector('.rating-scale');
 
-        if (currentQuestion === questions.length - 1) {
-            // Ini adalah pertanyaan Hobi (terakhir)
-            // Render pilihan hobi
-            ratingScaleContainer.innerHTML = `
-                <label class="rating-option">
-                    <input type="radio" name="currentQuestion" value="Musik" required>
-                    <span class="radio-circle" style="font-size: 1.2rem;">🎵</span>
-                    <span class="radio-label-text">Musik</span>
-                </label>
-                <label class="rating-option">
-                    <input type="radio" name="currentQuestion" value="Seni">
-                    <span class="radio-circle" style="font-size: 1.2rem;">🎨</span>
-                    <span class="radio-label-text">Seni</span>
-                </label>
-                <label class="rating-option">
-                    <input type="radio" name="currentQuestion" value="Membaca / Menonton">
-                    <span class="radio-circle" style="font-size: 1.2rem;">📚</span>
-                    <span class="radio-label-text">Membaca / Menonton</span>
-                </label>
-                <label class="rating-option">
-                    <input type="radio" name="currentQuestion" value="Olahraga">
-                    <span class="radio-circle" style="font-size: 1.2rem;">⚽</span>
-                    <span class="radio-label-text">Olahraga</span>
-                </label>
-                <!-- Opsi tambahan untuk memastikan layout konsisten -->
-            `;
+        // Ini adalah pertanyaan IES-R biasa
+        // Restore Likert scale structure if needed
+        if (!ratingScaleContainer.innerHTML.includes('value="4"')) {
+            ratingScaleContainer.innerHTML = likertScaleHTML;
 
-            // Re-attach event listeners for new radio buttons
-            const newRadios = document.querySelectorAll('input[name="currentQuestion"]');
-            newRadios.forEach(radio => {
+            // Re-attach event listeners for restored radio buttons
+            const restoredRadios = document.querySelectorAll('input[name="currentQuestion"]');
+            restoredRadios.forEach(radio => {
                 radio.addEventListener('change', function () {
                     document.getElementById('nextButton').disabled = false;
-                    // Auto-focus atau style perubahan bisa ditambahkan di sini
                 });
-            });
-
-        } else {
-            // Ini adalah pertanyaan IES-R biasa
-            // Restore Likert scale structure if needed
-            if (!ratingScaleContainer.innerHTML.includes('value="4"')) {
-                ratingScaleContainer.innerHTML = likertScaleHTML;
-
-                // Re-attach event listeners for restored radio buttons
-                const restoredRadios = document.querySelectorAll('input[name="currentQuestion"]');
-                restoredRadios.forEach(radio => {
-                    radio.addEventListener('change', function () {
-                        document.getElementById('nextButton').disabled = false;
-                    });
-                });
-            }
-
-            // Reset radio buttons untuk pertanyaan baru
-            const radioInputs = document.querySelectorAll('input[name="currentQuestion"]');
-            radioInputs.forEach(radio => {
-                radio.checked = false;
             });
         }
+
+        // Reset radio buttons untuk pertanyaan baru
+        const radioInputs = document.querySelectorAll('input[name="currentQuestion"]');
+        radioInputs.forEach(radio => {
+            radio.checked = false;
+        });
 
         // Tampilkan jawaban sebelumnya jika ada
         if (answers[currentQuestion] !== undefined) {
@@ -194,13 +155,8 @@ document.addEventListener('DOMContentLoaded', function () {
     function saveCurrentAnswer() {
         const selectedRadio = document.querySelector('input[name="currentQuestion"]:checked');
         if (selectedRadio) {
-            // Jika pertanyaan terakhir (Hobi), simpan string. Jika IES-R, simpan integer.
-            const val = selectedRadio.value;
-            if (currentQuestion === questions.length - 1) {
-                answers[currentQuestion] = val; // Simpan "Musik", "Seni", dll.
-            } else {
-                answers[currentQuestion] = parseInt(val);
-            }
+            // Simpan integer (IES-R)
+            answers[currentQuestion] = parseInt(selectedRadio.value);
         }
     }
 
@@ -218,17 +174,10 @@ document.addEventListener('DOMContentLoaded', function () {
         if (validateCurrentQuestion()) {
             saveCurrentAnswer();
 
-            // Pisahkan jawaban IES-R (0-21) dan jawaban Hobi (22)
-            const iesrAnswers = answers.slice(0, 22);
-            const hobbyAnswer = answers[22];
+            // Pisahkan jawaban IES-R (0-21)
+            const iesrAnswers = answers;
 
             const totalScore = iesrAnswers.reduce((sum, answer) => sum + (typeof answer === 'number' ? answer : 0), 0);
-
-            // Simpan Hobi ke Current User
-            if (hobbyAnswer) {
-                currentUser.hobby = hobbyAnswer;
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            }
 
             // Calculate trauma level dan rekomendasi berdasarkan IES-R
             let traumaLevel = '';
