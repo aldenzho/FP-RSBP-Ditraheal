@@ -1,16 +1,33 @@
 // Inisialisasi aplikasi saat halaman dimuat
 document.addEventListener('DOMContentLoaded', function() {
+
     // ===== AUTH CHECK =====
     // Jika user sudah login, redirect ke dashboard (hanya untuk halaman auth)
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     const isAuthPage = window.location.pathname === '/login' || 
                       window.location.pathname === '/register' || 
                       window.location.pathname === '/';
+
+    const token = localStorage.getItem('token');
+
+
     
-    if (currentUser && isAuthPage) {
-        window.location.href = '/dashboard';
+    // Jika di halaman dashboard/results/assessment tapi belum login
+    const isProtectedPage = window.location.pathname.includes('/dashboard') || 
+                           window.location.pathname.includes('/results') || 
+                           window.location.pathname.includes('/assessment') ||
+                           window.location.pathname.includes('/profile');
+    
+    if (isProtectedPage && (!currentUser || !token)) {
+        window.location.href = '/login';
+        return;
     }
     
+    if (currentUser && token && isAuthPage) {
+        // Cek apakah sudah punya assessment
+        checkAssessmentAndRedirect(currentUser, token);
+        return;
+    }
     // ===== FORM HANDLERS =====
     // Tambahkan event listener untuk form submit dengan Enter key
     const loginForm = document.getElementById('loginForm');
@@ -78,6 +95,34 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // ===== ADDITIONAL FEATURES =====
+
+    async function checkAssessmentAndRedirect(currentUser, token) {
+    try {
+        const response = await fetch(`/api/assessments/latest/${currentUser.id}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            if (result.success && result.assessment) {
+                // Ada assessment, redirect ke results
+                window.location.href = '/results';
+            } else {
+                // Tidak ada assessment, redirect ke dashboard
+                window.location.href = '/dashboard';
+            }
+        } else {
+            // Error, redirect ke dashboard
+            window.location.href = '/dashboard';
+        }
+    } catch (error) {
+        console.error('Error checking assessment:', error);
+        window.location.href = '/dashboard';
+    }
+}
     
     // Navbar background change on scroll
     window.addEventListener('scroll', function() {

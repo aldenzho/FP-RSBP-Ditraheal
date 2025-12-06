@@ -304,6 +304,7 @@ const verifyToken = (req, res, next) => {
         
         // Simpan userId di request untuk digunakan di endpoint
         req.userId = userId;
+        req.user = user;
         next();
     } catch (error) {
         return res.status(401).json({ 
@@ -315,16 +316,7 @@ const verifyToken = (req, res, next) => {
 
 app.post('/api/assessments/save', verifyToken, (req, res) => {
     const { totalScore, traumaLevel, traumaDescription, recommendations, interventions, subscales, formattedAnswers } = req.body;
-    const userId = req.userId; // Dari middleware
-
-    // Check if user exists
-    const user = users.find(u => u.id === userId);
-    if (!user) {
-        return res.status(404).json({ 
-            success: false, 
-            message: 'User tidak ditemukan!' 
-        });
-    }
+    const userId = req.userId;
 
     // Create new assessment result
     const newResult = {
@@ -384,7 +376,6 @@ app.get('/api/assessments/latest/:userId', verifyToken, (req, res) => {
         });
     }
 });
-
 app.get('/api/assessments/user/:userId', verifyToken, (req, res) => {
     const userId = req.params.userId;
     

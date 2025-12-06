@@ -21,15 +21,49 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const result = await API.login(email, password);
             
+            // auth.js - Ubah bagian login handler
             if (result.success) {
                 // Save user data to localStorage
                 localStorage.setItem('currentUser', JSON.stringify(result.data.user));
                 localStorage.setItem('token', result.data.token);
                 
                 Utils.showMessage('loginMessage', 'Login berhasil! Mengarahkan...', 'success');
-                setTimeout(() => {
-                    window.location.href = '/results';
-                }, 1000);
+                
+                // Cek apakah user sudah punya assessment terbaru
+                try {
+                    const assessmentResponse = await fetch(`/api/assessments/latest/${result.data.user.id}`, {
+                        headers: {
+                            'Authorization': `Bearer ${result.data.token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (assessmentResponse.ok) {
+                        const assessmentResult = await assessmentResponse.json();
+                        if (assessmentResult.success && assessmentResult.assessment) {
+                            // Ada assessment, redirect ke results
+                            setTimeout(() => {
+                                window.location.href = '/results';
+                            }, 1000);
+                        } else {
+                            // Tidak ada assessment, redirect ke dashboard
+                            setTimeout(() => {
+                                window.location.href = '/dashboard';
+                            }, 1000);
+                        }
+                    } else {
+                        // Error fetching, redirect ke dashboard
+                        setTimeout(() => {
+                            window.location.href = '/dashboard';
+                        }, 1000);
+                    }
+                } catch (error) {
+                    console.error('Error checking assessment:', error);
+                    // Jika error, tetap redirect ke dashboard
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                    }, 1000);
+                }
             } else {
                 Utils.showMessage('loginMessage', result.data.message || 'Login gagal!', 'error');
             }

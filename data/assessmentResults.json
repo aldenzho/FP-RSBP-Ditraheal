@@ -25,5 +25,32 @@
       }
     ],
     "createdAt": "2025-12-06T17:15:28.353Z"
+  },
+  {
+    "id": "1765043606850",
+    "userId": "1765043526483",
+    "totalScore": 55,
+    "traumaLevel": "Tinggi",
+    "recommendations": [
+      {
+        "title": "Konsultasi Segera",
+        "description": "Segera hubungi psikolog klinis atau psikiater untuk penanganan profesional."
+      },
+      {
+        "title": "Dukungan Sosial",
+        "description": "Jangan ragu untuk meminta dukungan dari keluarga dan teman dekat."
+      }
+    ],
+    "interventions": [
+      {
+        "title": "Trauma-Focused Therapy",
+        "description": "Terapi khusus untuk penanganan trauma yang komprehensif."
+      },
+      {
+        "title": "Medical Consultation",
+        "description": "Konsultasi mengenai kemungkinan intervensi medis jika diperlukan."
+      }
+    ],
+    "createdAt": "2025-12-06T17:53:26.850Z"
   }
 ]

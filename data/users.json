@@ -94,5 +94,29 @@
     "password": "123456",
     "hobby": "Musik",
     "createdAt": "2025-12-06T16:47:48.116Z"
+  },
+  {
+    "id": "1765043022226",
+    "firstName": "dani",
+    "lastName": "aditya",
+    "gender": "male",
+    "age": 43,
+    "instagram": "dandit",
+    "email": "dani1@gmail.com",
+    "password": "123456",
+    "hobby": "Musik",
+    "createdAt": "2025-12-06T17:43:42.226Z"
+  },
+  {
+    "id": "1765043526483",
+    "firstName": "enrique",
+    "lastName": "julio",
+    "gender": "male",
+    "age": 34,
+    "instagram": "eariq",
+    "email": "enrik1@gmail.com",
+    "password": "123456",
+    "hobby": "Musik",
+    "createdAt": "2025-12-06T17:52:06.483Z"
   }
 ]
