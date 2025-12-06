@@ -70,5 +70,29 @@
     "password": "daffa123",
     "hobby": "Musik",
     "createdAt": "2025-12-06T12:27:05.811Z"
+  },
+  {
+    "id": "1765039609114",
+    "firstName": "reno",
+    "lastName": "suki",
+    "gender": "male",
+    "age": 23,
+    "instagram": "rensuk",
+    "email": "231@gmail.com",
+    "password": "123456",
+    "hobby": "Musik",
+    "createdAt": "2025-12-06T16:46:49.114Z"
+  },
+  {
+    "id": "1765039668116",
+    "firstName": "charlie",
+    "lastName": "junianto",
+    "gender": "male",
+    "age": 34,
+    "instagram": "charnian",
+    "email": "char23@gmail.com",
+    "password": "123456",
+    "hobby": "Musik",
+    "createdAt": "2025-12-06T16:47:48.116Z"
   }
 ]

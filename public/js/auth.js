@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 Utils.showMessage('loginMessage', 'Login berhasil! Mengarahkan...', 'success');
                 setTimeout(() => {
-                    window.location.href = '/dashboard';
+                    window.location.href = '/results';
                 }, 1000);
             } else {
                 Utils.showMessage('loginMessage', result.data.message || 'Login gagal!', 'error');

@@ -2,14 +2,16 @@
 document.addEventListener('DOMContentLoaded', function () {
     // Check if user is logged in
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    if (!currentUser) {
+    const token = localStorage.getItem('token');
+    
+    if (!currentUser || !token) {
         window.location.href = 'login.html';
         return;
     }
 
     // Data pertanyaan IES-R (22 Item Standar) - Skala Likert 1-5
     const questions = [
-        // ● Intrusion (8 items: 1, 2, 3, 6, 9, 14, 16, 20): intrusive thoughts, nightmares, intrusive feelings, and imagery associated with the traumatic event (range 0-32)
+        // ● Intrusion (8 items: 1, 2, 3, 6, 9, 14, 16, 20)
         "Setiap pengingat membuat saya kembali merasakan perasaan tentang hal itu",
         "Saya mengalami kesulitan untuk tetap tertidur",
         "Hal-hal lain terus membuat saya memikirkannya",
@@ -19,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
         "Saya merasakan gelombang perasaan kuat tentang hal itu",
         "Saya mengalami mimpi tentang hal itu",
 
-        // ● Avoidance (8 items: 5, 7, 8, 11, 12, 13, 17, 22): efforts to avoid trauma-related thoughts, feelings, or reminders, as well as numbing of responsiveness (range 0-32)
+        // ● Avoidance (8 items: 5, 7, 8, 11, 12, 13, 17, 22)
         "Saya menghindari membuat diri saya menjadi sedih ketika saya memikirkannya atau ketika saya diingatkan tentang itu",
         "Saya merasa seolah-olah itu tidak pernah terjadi atau tidak nyata",
         "Saya menjauhi hal-hal yang mengingatkan saya tentang itu",
@@ -29,20 +31,18 @@ document.addEventListener('DOMContentLoaded', function () {
         "Saya berusaha menghapusnya dari ingatan saya",
         "Saya berusaha untuk tidak membicarakannya",
 
-        // ● Hyperarousal (6 items: 4, 10, 15, 18, 19, 21): heightened physiological arousal and reactivity following the trauma (range 0-24)
+        // ● Hyperarousal (6 items: 4, 10, 15, 18, 19, 21)
         "Saya merasa mudah tersinggung dan marah",
         "Saya mudah terkejut dan mudah kaget",
         "Saya mengalami kesulitan untuk memulai tidur",
         "Saya mengalami kesulitan untuk berkonsentrasi",
         "Pengingat tentang hal itu menyebabkan reaksi fisik, seperti berkeringat, sulit bernapas, mual, atau jantung berdebar",
         "Saya merasa waspada atau selalu berjaga-jaga",
-
-
     ];
 
     let currentQuestion = 0;
     const answers = [];
-    let likertScaleHTML = ''; // Store original scale HTML
+    let likertScaleHTML = '';
 
     // Capture original Likert scale HTML on load
     const ratingScale = document.querySelector('.rating-scale');
@@ -83,7 +83,6 @@ document.addEventListener('DOMContentLoaded', function () {
         // Render UI Pertanyaan
         const ratingScaleContainer = document.querySelector('.rating-scale');
 
-        // Ini adalah pertanyaan IES-R biasa
         // Restore Likert scale structure if needed
         if (!ratingScaleContainer.innerHTML.includes('value="4"')) {
             ratingScaleContainer.innerHTML = likertScaleHTML;
@@ -155,7 +154,6 @@ document.addEventListener('DOMContentLoaded', function () {
     function saveCurrentAnswer() {
         const selectedRadio = document.querySelector('input[name="currentQuestion"]:checked');
         if (selectedRadio) {
-            // Simpan integer (IES-R)
             answers[currentQuestion] = parseInt(selectedRadio.value);
         }
     }
@@ -168,7 +166,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         return true;
     }
-    function handleFormSubmit(event) {
+
+    async function handleFormSubmit(event) {
         event.preventDefault();
 
         if (validateCurrentQuestion()) {
@@ -186,12 +185,6 @@ document.addEventListener('DOMContentLoaded', function () {
             let interventions = [];
 
             // RULES SYSTEM berdasarkan IES-R cut-off points YANG BENAR
-            // IES-R Standar cut-off (dalam skor 0-88):
-            // 0-23 = Minimal trauma / Low
-            // 24-32 = Mild trauma / Ringan  
-            // 33-36 = Moderate trauma / Sedang
-            // 37-88 = Severe trauma / Tinggi
-
             if (totalScore <= 23) {
                 traumaLevel = 'Rendah';
                 traumaDescription = 'Skor IES-R Anda menunjukkan gejala trauma yang rendah (minimal). Kondisi ini menunjukkan kemampuan koping yang baik dalam menghadapi stres. Tetap pertahankan gaya hidup sehat dan dukungan sosial.';
@@ -286,21 +279,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 ];
             }
 
-            // Hitung subskala IES-R (Gunakan iesrAnswers yang sudah dipotong)
+            // Hitung subskala IES-R
             const subscales = {
                 intrusion: iesrAnswers.slice(0, 8).reduce((sum, answer) => sum + answer, 0),
                 avoidance: iesrAnswers.slice(8, 16).reduce((sum, answer) => sum + answer, 0),
                 hyperarousal: iesrAnswers.slice(16, 22).reduce((sum, answer) => sum + answer, 0)
             };
 
-            // Format answers untuk kompatibilitas dengan kode sebelumnya
-            // Format answers untuk kompatibilitas dengan kode sebelumnya
+            // Format answers untuk kompatibilitas
             const formattedAnswers = {};
             iesrAnswers.forEach((answer, index) => {
                 formattedAnswers[`question${index + 1}`] = answer;
             });
 
-            // Save results to localStorage
+            // Save results to LOCALSTORAGE
             const assessmentResults = {
                 userId: currentUser.id,
                 totalScore: totalScore,
@@ -314,14 +306,44 @@ document.addEventListener('DOMContentLoaded', function () {
                 source: 'assessment_completion'
             };
 
-            // Save to assessment history
+            // 1. Simpan ke assessment history di localStorage
             let assessmentHistory = JSON.parse(localStorage.getItem('assessmentHistory')) || [];
             assessmentHistory.push(assessmentResults);
             localStorage.setItem('assessmentHistory', JSON.stringify(assessmentHistory));
 
-            // Update user's latest assessment
+            // 2. Update user's latest assessment di localStorage
             currentUser.latestAssessment = assessmentResults;
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+            // 3. SIMPAN KE SERVER (PENTING!)
+            try {
+                const response = await fetch('/api/assessments/save', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: currentUser.id,
+                        totalScore: totalScore,
+                        traumaLevel: traumaLevel,
+                        traumaDescription: traumaDescription,
+                        subscales: subscales,
+                        formattedAnswers: formattedAnswers,
+                        recommendations: recommendations,
+                        interventions: interventions
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (!result.success) {
+                    console.warn('Gagal menyimpan ke server, tetapi data tetap disimpan di lokal');
+                }
+            } catch (error) {
+                console.error('Error saving to server:', error);
+                // Tetap lanjut meskipun gagal ke server
+            }
 
             // Redirect to results page
             window.location.href = 'results.html';

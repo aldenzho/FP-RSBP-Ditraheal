@@ -1,14 +1,50 @@
 // results.js
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
     // Check if user is logged in
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    if (!currentUser) {
+    const token = localStorage.getItem('token');
+    
+    if (!currentUser || !token) {
         window.location.href = 'login.html';
         return;
     }
 
-    // Get assessment results from user profile
-    const results = currentUser.latestAssessment;
+    // Coba ambil data dari localStorage dulu
+    let results = currentUser.latestAssessment;
+    
+    // Jika tidak ada di localStorage, coba ambil dari SERVER
+    if (!results) {
+        try {
+            const response = await fetch(`/api/assessments/latest/${currentUser.id}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const serverResult = await response.json();
+            
+            if (serverResult.success && serverResult.assessment) {
+                results = serverResult.assessment;
+                // Simpan ke localStorage untuk penggunaan berikutnya
+                currentUser.latestAssessment = results;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            } else {
+                // Jika server juga tidak punya data, arahkan ke assessment
+                window.location.href = 'assessment.html';
+                return;
+            }
+        } catch (error) {
+            console.error('Error loading from server:', error);
+            // Jika error, coba lokal lagi
+            if (!results) {
+                window.location.href = 'assessment.html';
+                return;
+            }
+        }
+    }
+
+    // Jika tetap tidak ada hasil
     if (!results) {
         window.location.href = 'assessment.html';
         return;
@@ -19,15 +55,35 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // FITUR AUTO-REFRESH: Update setiap 2 detik untuk melihat perubahan compliance
     let lastScore = results.totalScore;
-    setInterval(() => {
-        const updatedUser = JSON.parse(localStorage.getItem('currentUser'));
-        if (updatedUser && updatedUser.latestAssessment && updatedUser.latestAssessment.totalScore !== lastScore) {
-            console.log('Score updated! Refreshing display...');
-            displayResults(updatedUser.latestAssessment);
-            lastScore = updatedUser.latestAssessment.totalScore;
+    setInterval(async () => {
+        // Cek update dari server juga
+        try {
+            const response = await fetch(`/api/assessments/latest/${currentUser.id}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
             
-            // Tampilkan notifikasi visual
-            showUpdateNotification();
+            const serverResult = await response.json();
+            
+            if (serverResult.success && serverResult.assessment) {
+                const newResults = serverResult.assessment;
+                if (newResults.totalScore !== lastScore) {
+                    console.log('Score updated from server! Refreshing display...');
+                    displayResults(newResults);
+                    lastScore = newResults.totalScore;
+                    
+                    // Update localStorage
+                    currentUser.latestAssessment = newResults;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    
+                    // Tampilkan notifikasi visual
+                    showUpdateNotification();
+                }
+            }
+        } catch (error) {
+            // Skip error untuk auto-refresh
         }
     }, 2000);
 
@@ -37,6 +93,43 @@ document.addEventListener('DOMContentLoaded', function () {
         treatmentBtn.addEventListener('click', goToTreatment);
     }
 });
+
+// ... sisa fungsi displayResults dan lainnya tetap sama ...
+
+// Fungsi baru: Load assessment dari server
+async function loadAssessmentFromServer(userId, token, silent = false) {
+    try {
+        const response = await fetch(`/api/assessments/latest/${userId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success && result.assessment) {
+            // Update localStorage dengan data terbaru
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (currentUser) {
+                currentUser.latestAssessment = result.assessment;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            }
+            
+            return result.assessment;
+        } else {
+            if (!silent) {
+                console.log('No assessment found on server');
+            }
+            return null;
+        }
+    } catch (error) {
+        if (!silent) {
+            console.error('Error loading assessment from server:', error);
+        }
+        return null;
+    }
+}
 
 function displayResults(results) {
     // Display total score (IES-R 0-88)
@@ -311,13 +404,48 @@ function goToTreatment() {
     window.location.href = 'treatment.html';
 }
 
-function saveResults() {
-    // Simpan ke assessment history
+// Ubah fungsi saveResults untuk menyimpan ke SERVER dan localStorage
+async function saveResults() {
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    if (!currentUser || !currentUser.latestAssessment) return;
+    const token = localStorage.getItem('token');
     
-    updateAssessmentHistory(currentUser.latestAssessment);
-    alert('✅ Hasil assessment telah disimpan. Anda dapat melihat riwayat assessment di dashboard.');
+    if (!currentUser || !currentUser.latestAssessment || !token) return;
+    
+    // 1. Simpan ke server
+    const assessment = currentUser.latestAssessment;
+    try {
+        const response = await fetch('/api/assessments/save', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                userId: currentUser.id,
+                totalScore: assessment.totalScore,
+                traumaLevel: assessment.traumaLevel,
+                traumaDescription: assessment.traumaDescription,
+                recommendations: assessment.recommendations || [],
+                interventions: assessment.interventions || [],
+                subscales: assessment.subscales || {},
+                formattedAnswers: assessment.formattedAnswers || []
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // 2. Update assessment history di localStorage
+            updateAssessmentHistory(assessment);
+            
+            alert('✅ Hasil assessment telah disimpan ke server. Anda dapat melihat riwayat assessment di dashboard.');
+        } else {
+            alert('Gagal menyimpan hasil assessment ke server.');
+        }
+    } catch (error) {
+        console.error('Error saving results to server:', error);
+        alert('Terjadi kesalahan saat menyimpan hasil ke server.');
+    }
 }
 
 function updateAssessmentHistory(assessment) {

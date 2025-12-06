@@ -156,7 +156,13 @@ function updateNavbarAuthState() {
 
 // Logout function
 function logout() {
+    // Simpan data user sebelum dihapus
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    
+    // Hanya hapus currentUser dan token, tapi simpan user data di localStorage lain
     localStorage.removeItem('currentUser');
     localStorage.removeItem('token');
-    window.location.href = '/';
+    
+    // Redirect ke halaman login
+    window.location.href = '/login';
 }

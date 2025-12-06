@@ -24,6 +24,17 @@ if (!fs.existsSync(dataDir)) {
 // Simple in-memory storage (replace with database later)
 let users = [];
 let assessments = [];
+let assessmentResults = [];
+
+// Load assessment results from file if exists
+try {
+    if (fs.existsSync(path.join(dataDir, 'assessmentResults.json'))) {
+        const resultsData = fs.readFileSync(path.join(dataDir, 'assessmentResults.json'), 'utf8');
+        assessmentResults = JSON.parse(resultsData);
+    }
+} catch (error) {
+    console.log('No existing assessment results data found');
+}
 
 // Load data from file if exists
 try {
@@ -168,6 +179,234 @@ app.get('/api/users/profile', (req, res) => {
     });
 });
 
+// ===== ASSESSMENT RESULTS ROUTES =====
+app.post('/api/assessments/save', (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+        return res.status(401).json({ 
+            success: false, 
+            message: 'Token diperlukan!' 
+        });
+    }
+
+    const { userId, totalScore, traumaLevel, recommendations, interventions } = req.body;
+
+    // Check if user exists
+    const user = users.find(u => u.id === userId);
+    if (!user) {
+        return res.status(404).json({ 
+            success: false, 
+            message: 'User tidak ditemukan!' 
+        });
+    }
+
+    // Create new assessment result
+    const newResult = {
+        id: Date.now().toString(),
+        userId,
+        totalScore,
+        traumaLevel,
+        recommendations: recommendations || [],
+        interventions: interventions || [],
+        createdAt: new Date().toISOString()
+    };
+
+    assessmentResults.push(newResult);
+
+    // Save to file
+    try {
+        fs.writeFileSync(path.join(dataDir, 'assessmentResults.json'), JSON.stringify(assessmentResults, null, 2));
+    } catch (error) {
+        console.error('Error saving assessment results:', error);
+    }
+
+    res.json({ 
+        success: true, 
+        message: 'Hasil assessment berhasil disimpan!',
+        resultId: newResult.id
+    });
+});
+
+app.get('/api/assessments/latest/:userId', (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+        return res.status(401).json({ 
+            success: false, 
+            message: 'Token diperlukan!' 
+        });
+    }
+
+    const userId = req.params.userId;
+    
+    // Get latest assessment for this user
+    const userAssessments = assessmentResults
+        .filter(result => result.userId === userId)
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    if (userAssessments.length > 0) {
+        res.json({
+            success: true,
+            assessment: userAssessments[0]
+        });
+    } else {
+        res.json({
+            success: true,
+            assessment: null
+        });
+    }
+});
+
+app.get('/api/assessments/user/:userId', (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+        return res.status(401).json({ 
+            success: false, 
+            message: 'Token diperlukan!' 
+        });
+    }
+
+    const userId = req.params.userId;
+    
+    // Get all assessments for this user, sorted by latest first
+    const userAssessments = assessmentResults
+        .filter(result => result.userId === userId)
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    res.json({
+        success: true,
+        assessments: userAssessments
+    });
+});
+
+const verifyToken = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ 
+            success: false, 
+            message: 'Token diperlukan!' 
+        });
+    }
+    
+    const token = authHeader.split(' ')[1];
+    try {
+        // Decode token sederhana (format: userId:timestamp)
+        const decoded = Buffer.from(token, 'base64').toString('ascii');
+        const [userId, timestamp] = decoded.split(':');
+        
+        // Cek apakah user ada
+        const user = users.find(u => u.id === userId);
+        if (!user) {
+            return res.status(401).json({ 
+                success: false, 
+                message: 'Token tidak valid!' 
+            });
+        }
+        
+        // Simpan userId di request untuk digunakan di endpoint
+        req.userId = userId;
+        next();
+    } catch (error) {
+        return res.status(401).json({ 
+            success: false, 
+            message: 'Token tidak valid!' 
+        });
+    }
+};
+
+app.post('/api/assessments/save', verifyToken, (req, res) => {
+    const { totalScore, traumaLevel, traumaDescription, recommendations, interventions, subscales, formattedAnswers } = req.body;
+    const userId = req.userId; // Dari middleware
+
+    // Check if user exists
+    const user = users.find(u => u.id === userId);
+    if (!user) {
+        return res.status(404).json({ 
+            success: false, 
+            message: 'User tidak ditemukan!' 
+        });
+    }
+
+    // Create new assessment result
+    const newResult = {
+        id: Date.now().toString(),
+        userId,
+        totalScore,
+        traumaLevel,
+        traumaDescription: traumaDescription || '',
+        recommendations: recommendations || [],
+        interventions: interventions || [],
+        subscales: subscales || {},
+        formattedAnswers: formattedAnswers || [],
+        createdAt: new Date().toISOString()
+    };
+
+    assessmentResults.push(newResult);
+
+    // Save to file
+    try {
+        fs.writeFileSync(path.join(dataDir, 'assessmentResults.json'), JSON.stringify(assessmentResults, null, 2));
+    } catch (error) {
+        console.error('Error saving assessment results:', error);
+    }
+
+    res.json({ 
+        success: true, 
+        message: 'Hasil assessment berhasil disimpan!',
+        resultId: newResult.id
+    });
+});
+
+app.get('/api/assessments/latest/:userId', verifyToken, (req, res) => {
+    const userId = req.params.userId;
+    
+    // Verify the user is accessing their own data
+    if (userId !== req.userId) {
+        return res.status(403).json({ 
+            success: false, 
+            message: 'Akses ditolak!' 
+        });
+    }
+    
+    // Get latest assessment for this user
+    const userAssessments = assessmentResults
+        .filter(result => result.userId === userId)
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    if (userAssessments.length > 0) {
+        res.json({
+            success: true,
+            assessment: userAssessments[0]
+        });
+    } else {
+        res.json({
+            success: true,
+            assessment: null
+        });
+    }
+});
+
+app.get('/api/assessments/user/:userId', verifyToken, (req, res) => {
+    const userId = req.params.userId;
+    
+    // Verify the user is accessing their own data
+    if (userId !== req.userId) {
+        return res.status(403).json({ 
+            success: false, 
+            message: 'Akses ditolak!' 
+        });
+    }
+    
+    // Get all assessments for this user, sorted by latest first
+    const userAssessments = assessmentResults
+        .filter(result => result.userId === userId)
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    res.json({
+        success: true,
+        assessments: userAssessments
+    });
+});
+
 // ===== SERVE HTML PAGES =====
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
@@ -235,4 +474,3 @@ process.on('SIGINT', () => {
     console.log('\nServer dimatikan');
     process.exit(0);
 });
-
