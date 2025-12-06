@@ -46,5 +46,29 @@
     "password": "abc123",
     "hobby": "Olahraga",
     "createdAt": "2025-12-06T10:14:44.115Z"
+  },
+  {
+    "id": "1765023569043",
+    "firstName": "budi",
+    "lastName": "anto",
+    "gender": "male",
+    "age": 25,
+    "instagram": "budi12",
+    "email": "budi@gmail.com",
+    "password": "abc123",
+    "hobby": "Membaca / Menonton",
+    "createdAt": "2025-12-06T12:19:29.043Z"
+  },
+  {
+    "id": "1765024025811",
+    "firstName": "Daffa",
+    "lastName": "Mubarrok",
+    "gender": "male",
+    "age": 20,
+    "instagram": "daffa123",
+    "email": "daffa@gmail.com",
+    "password": "daffa123",
+    "hobby": "Musik",
+    "createdAt": "2025-12-06T12:27:05.811Z"
   }
 ]
