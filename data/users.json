@@ -34,5 +34,17 @@
     "password": "test123",
     "hobby": "Seni",
     "createdAt": "2025-11-23T17:23:30.783Z"
+  },
+  {
+    "id": "1765016084115",
+    "firstName": "Filbert",
+    "lastName": "Hainsly Martin",
+    "gender": "male",
+    "age": 21,
+    "instagram": "filbert17",
+    "email": "filbert@gmail.com",
+    "password": "abc123",
+    "hobby": "Olahraga",
+    "createdAt": "2025-12-06T10:14:44.115Z"
   }
 ]

@@ -3,12 +3,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Check if user is logged in
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     if (!currentUser) {
-        window.location.href = '/login';
+        window.location.href = 'login.html';
         return;
     }
     
     // Display user name
-    document.getElementById('userName').textContent = currentUser.firstName + ' ' + currentUser.lastName;
+    const userNameElement = document.getElementById('userName');
+    if (userNameElement) {
+        userNameElement.textContent = currentUser.firstName + ' ' + currentUser.lastName;
+    }
     
     // Load and display progress data
     loadProgressData();
@@ -20,41 +23,17 @@ function loadProgressData() {
     
     // Filter assessments for current user
     const userAssessments = assessmentHistory.filter(assessment => assessment.userId === currentUser.id);
-
-    // Start Debug: print and auto-download userAssessments as JSON
-    // try {
-    //     const json = JSON.stringify(userAssessments, null, 2);
-    //     const blob = new Blob([json], { type: 'application/json' });
-    //     const url = URL.createObjectURL(blob);
-    //     const a = document.createElement('a');
-    //     a.href = url;
-    //     a.download = 'userAssessments.json';
-    //     document.body.appendChild(a);
-    //     a.click();
-    //     a.remove();
-    //     URL.revokeObjectURL(url);
-    // } catch (e) {
-    //     console.error('Failed to create JSON download for userAssessments', e);
-    //     try {
-    //         const text = String(userAssessments).slice(0, 10000);
-    //         if (navigator.clipboard && navigator.clipboard.writeText) {
-    //             navigator.clipboard.writeText(text);
-    //             alert('Auto-download failed. A portion of the data was copied to clipboard.');
-    //         } else {
-    //             alert('Auto-download failed. See console for details.');
-    //         }
-    //     } catch (e2) {
-    //         alert('Failed to export userAssessments. See console for details.');
-    //     }
-    // }
-    // End Debug
     
     if (userAssessments.length === 0) {
         // Show empty state
         document.getElementById('emptyState').style.display = 'block';
         document.getElementById('progressSummary').style.display = 'none';
         document.getElementById('recentAssessments').style.display = 'none';
-        document.getElementById('progressButton').style.display = 'none';
+        
+        const progressButton = document.getElementById('progressButton');
+        if (progressButton) {
+            progressButton.style.display = 'none';
+        }
         return;
     }
     
@@ -62,7 +41,11 @@ function loadProgressData() {
     document.getElementById('emptyState').style.display = 'none';
     document.getElementById('progressSummary').style.display = 'block';
     document.getElementById('recentAssessments').style.display = 'block';
-    document.getElementById('progressButton').style.display = 'inline-block';
+    
+    const progressButton = document.getElementById('progressButton');
+    if (progressButton) {
+        progressButton.style.display = 'inline-block';
+    }
     
     // Get latest assessment
     const latestAssessment = userAssessments[userAssessments.length - 1];
@@ -70,43 +53,60 @@ function loadProgressData() {
     // Update progress summary
     updateProgressSummary(latestAssessment, userAssessments);
     
-    // Create progress chart
+    // Create progress chart with color coding
     createProgressChart(userAssessments);
     
-    // Display recent assessments
+    // Display recent assessments with color coding
     displayRecentAssessments(userAssessments);
 }
 
 function updateProgressSummary(latestAssessment, allAssessments) {
     // Update trauma level
     const traumaLevelElement = document.getElementById('currentTraumaLevel');
-    traumaLevelElement.textContent = latestAssessment.traumaLevel;
-    traumaLevelElement.className = 'trauma-level-badge ' + latestAssessment.traumaLevel.toLowerCase();
+    if (traumaLevelElement) {
+        traumaLevelElement.textContent = latestAssessment.traumaLevel;
+        traumaLevelElement.className = 'trauma-level-badge ' + latestAssessment.traumaLevel.toLowerCase();
+    }
     
     // Update trauma level description
     const descriptionElement = document.getElementById('traumaLevelDescription');
-    descriptionElement.textContent = getTraumaLevelDescription(latestAssessment.traumaLevel);
+    if (descriptionElement) {
+        descriptionElement.textContent = getTraumaLevelDescription(latestAssessment.traumaLevel);
+    }
     
     // Update score
-    document.getElementById('currentScore').textContent = latestAssessment.totalScore;
-    document.getElementById('lastScore').textContent = latestAssessment.totalScore;
+    const currentScoreElement = document.getElementById('currentScore');
+    if (currentScoreElement) {
+        currentScoreElement.textContent = latestAssessment.totalScore.toFixed(0);
+    }
+    
+    const lastScoreElement = document.getElementById('lastScore');
+    if (lastScoreElement) {
+        lastScoreElement.textContent = latestAssessment.totalScore.toFixed(0);
+    }
     
     // Update assessment date
     const lastDate = new Date(latestAssessment.date);
-    document.getElementById('lastAssessmentDate').textContent = lastDate.toLocaleDateString('id-ID', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-    });
+    const lastAssessmentDateElement = document.getElementById('lastAssessmentDate');
+    if (lastAssessmentDateElement) {
+        lastAssessmentDateElement.textContent = lastDate.toLocaleDateString('id-ID', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+    }
     
     // Update total assessments
-    document.getElementById('totalAssessments').textContent = allAssessments.length;
+    const totalAssessmentsElement = document.getElementById('totalAssessments');
+    if (totalAssessmentsElement) {
+        totalAssessmentsElement.textContent = allAssessments.length;
+    }
 }
 
 function getTraumaLevelDescription(level) {
     const descriptions = {
         'Rendah': 'Gejala trauma dalam tingkat rendah. Pertahankan gaya hidup sehat.',
-        'Ringan': 'Beberapa gejala trauma terdeteksi, namun masih dapat dikelola. Pertahankan strategi koping yang baik.',
+        'Ringan': 'Beberapa gejala trauma terdeteksi, namun masih dapat dikelola.',
         'Sedang': 'Beberapa gejala trauma terdeteksi. Perlu perhatian dan dukungan.',
         'Tinggi': 'Gejala trauma signifikan. Disarankan konsultasi profesional.'
     };
@@ -114,8 +114,46 @@ function getTraumaLevelDescription(level) {
     return descriptions[level] || 'Data tidak tersedia';
 }
 
+// FUNGSI BARU: Get Color berdasarkan Level Trauma
+function getColorByLevel(level) {
+    const colors = {
+        'Rendah': '#058c09',   // Hijau tua
+        'Ringan': '#09ec11',   // Hijau muda
+        'Sedang': '#FF9800',   // Orange
+        'Tinggi': '#F44336'    // Merah
+    };
+    return colors[level] || '#20B2AA'; // Default teal
+}
+
+// FUNGSI BARU: Get Color berdasarkan Score IES-R
+function getColorByScore(score) {
+    // IES-R cut-off points:
+    // 0-23 = Rendah (Hijau tua)
+    // 24-32 = Ringan (Hijau muda)
+    // 33-36 = Sedang (Orange)
+    // 37-88 = Tinggi (Merah)
+    
+    if (score <= 23) {
+        return '#058c09'; // Rendah - Hijau tua
+    } else if (score <= 32) {
+        return '#09ec11'; // Ringan - Hijau muda
+    } else if (score <= 36) {
+        return '#FF9800'; // Sedang - Orange
+    } else {
+        return '#F44336'; // Tinggi - Merah
+    }
+}
+
 function createProgressChart(assessments) {
-    const ctx = document.getElementById('progressChart').getContext('2d');
+    const ctx = document.getElementById('progressChart');
+    if (!ctx) return;
+    
+    const context = ctx.getContext('2d');
+    
+    // Destroy existing chart if any
+    if (window.dashboardChart) {
+        window.dashboardChart.destroy();
+    }
     
     // Sort assessments by date
     assessments.sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -127,26 +165,36 @@ function createProgressChart(assessments) {
     
     const scores = assessments.map(assessment => assessment.totalScore);
     
-    // Determine line color based on trend
-    const lineColor = getTrendColor(scores);
+    // FITUR BARU: Warna point berdasarkan level trauma masing-masing
+    const pointColors = assessments.map(assessment => getColorByLevel(assessment.traumaLevel));
     
-    new Chart(ctx, {
+    // Determine line color based on latest assessment
+    const latestLevel = assessments[assessments.length - 1].traumaLevel;
+    const lineColor = getColorByLevel(latestLevel);
+    
+    // Create gradient for background
+    const gradient = context.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, lineColor + '40'); // 40 = 25% opacity
+    gradient.addColorStop(1, lineColor + '00'); // 00 = 0% opacity
+    
+    window.dashboardChart = new Chart(context, {
         type: 'line',
         data: {
             labels: dates,
             datasets: [{
-                label: 'Skor Trauma',
+                label: 'Skor IES-R',
                 data: scores,
                 borderColor: lineColor,
-                backgroundColor: 'rgba(32, 178, 170, 0.1)',
+                backgroundColor: gradient,
                 borderWidth: 3,
                 fill: true,
                 tension: 0.4,
-                pointBackgroundColor: '#20B2AA',
+                pointBackgroundColor: pointColors, // WARNA BERBEDA PER POINT
                 pointBorderColor: '#ffffff',
                 pointBorderWidth: 2,
-                pointRadius: 6,
-                pointHoverRadius: 8
+                pointRadius: 7,
+                pointHoverRadius: 9,
+                pointHoverBorderWidth: 3
             }]
         },
         options: {
@@ -168,19 +216,29 @@ function createProgressChart(assessments) {
                 tooltip: {
                     backgroundColor: 'rgba(0, 0, 0, 0.8)',
                     titleFont: {
-                        size: 14
+                        size: 14,
+                        weight: 'bold'
                     },
                     bodyFont: {
                         size: 13
                     },
+                    padding: 12,
                     callbacks: {
                         label: function(context) {
                             const score = context.raw;
-                            let level = '';
-                            if (score <= 10) level = '(Rendah)';
-                            else if (score <= 15) level = '(Sedang)';
-                            else level = '(Tinggi)';
-                            return `Skor: ${score} ${level}`;
+                            const assessment = assessments[context.dataIndex];
+                            const level = assessment.traumaLevel;
+                            return `Skor: ${score.toFixed(0)} (${level})`;
+                        },
+                        labelColor: function(context) {
+                            const assessment = assessments[context.dataIndex];
+                            const color = getColorByLevel(assessment.traumaLevel);
+                            return {
+                                borderColor: color,
+                                backgroundColor: color,
+                                borderWidth: 2,
+                                borderRadius: 2
+                            };
                         }
                     }
                 }
@@ -191,13 +249,17 @@ function createProgressChart(assessments) {
                     max: 100,
                     title: {
                         display: true,
-                        text: 'Skor Trauma',
+                        text: 'Skor IES-R (0-88)',
                         font: {
-                            weight: 'bold'
+                            weight: 'bold',
+                            size: 12
                         }
                     },
                     grid: {
-                        color: 'rgba(0, 0, 0, 0.1)'
+                        color: 'rgba(0, 0, 0, 0.08)'
+                    },
+                    ticks: {
+                        stepSize: 10
                     }
                 },
                 x: {
@@ -205,7 +267,8 @@ function createProgressChart(assessments) {
                         display: true,
                         text: 'Tanggal Assessment',
                         font: {
-                            weight: 'bold'
+                            weight: 'bold',
+                            size: 12
                         }
                     },
                     grid: {
@@ -221,32 +284,22 @@ function createProgressChart(assessments) {
     });
 }
 
-function getTrendColor(scores) {
-    if (scores.length < 2) return '#20B2AA'; // Default color
-    
-    const firstScore = scores[0];
-    const lastScore = scores[scores.length - 1];
-    
-    if (lastScore < firstScore) {
-        return '#4CAF50'; // Green - improving
-    } else if (lastScore > firstScore) {
-        return '#F44336'; // Red - worsening
-    } else {
-        return '#FF9800'; // Orange - stable
-    }
-}
-
 function displayRecentAssessments(assessments) {
     const container = document.getElementById('assessmentsList');
+    if (!container) return;
+    
     container.innerHTML = '';
     
-    // Show only last 3 assessments
-    const recentAssessments = assessments.slice(-3).reverse();
+    // Show only last 5 assessments
+    const recentAssessments = assessments.slice(-5).reverse();
     
     recentAssessments.forEach(assessment => {
         const date = new Date(assessment.date);
         const assessmentElement = document.createElement('div');
         assessmentElement.className = 'assessment-item';
+        
+        // Get color based on trauma level
+        const levelColor = getColorByLevel(assessment.traumaLevel);
         
         assessmentElement.innerHTML = `
             <div class="assessment-date">
@@ -259,17 +312,26 @@ function displayRecentAssessments(assessments) {
                 })}
             </div>
             <div class="assessment-details">
-                <span class="assessment-score">Skor: ${assessment.totalScore}/88</span>
-                <span class="assessment-level ${assessment.traumaLevel.toLowerCase()}">${assessment.traumaLevel}</span>
+                <span class="assessment-score">Skor: ${assessment.totalScore.toFixed(0)}/88</span>
+                <span class="assessment-level" style="background-color: ${levelColor}; color: white; padding: 4px 12px; border-radius: 20px; font-weight: 600; font-size: 13px;">
+                    ${assessment.traumaLevel}
+                </span>
             </div>
         `;
+        
+        // Tambahkan border kiri dengan warna sesuai level
+        assessmentElement.style.borderLeft = `4px solid ${levelColor}`;
         
         container.appendChild(assessmentElement);
     });
 }
 
 function logout() {
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('token');
-    window.location.href = '/';
+    // Konfirmasi logout
+    const confirmed = confirm('Apakah Anda yakin ingin keluar?');
+    if (confirmed) {
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('token');
+        window.location.href = 'index.html';
+    }
 }

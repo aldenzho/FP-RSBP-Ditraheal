@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DITRAHEAL</title>
+    <title>DITRAHEAL - Program Pemulihan</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
         .action-buttons {
@@ -12,6 +12,7 @@
             justify-content: center;
             margin-top: 30px;
             padding: 20px 0;
+            flex-wrap: wrap;
         }
 
         .btn {
@@ -58,18 +59,58 @@
         .save-info {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             color: white;
-            padding: 15px;
-            border-radius: 10px;
+            padding: 20px;
+            border-radius: 12px;
             margin: 20px auto;
-            max-width: 600px;
+            max-width: 650px;
             text-align: center;
             font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: fadeIn 0.5s ease;
         }
 
         .save-info strong {
-            font-size: 18px;
+            font-size: 20px;
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
+        }
+
+        .save-info p {
+            margin: 8px 0;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .compliance-highlight {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
         }
     </style>
 </head>
@@ -81,7 +122,7 @@
                 <p>Tugas Penyembuhan Trauma</p>
             </div>
             <div>
-                <a href="/dashboard" class="btn btn-secondary">Dashboard</a>
+                <a href="dashboard.html" class="btn btn-secondary">Dashboard</a>
             </div>
         </header>
 
@@ -102,12 +143,16 @@
 
                 <!-- Info Box untuk Preview Perubahan -->
                 <div class="save-info" id="save-preview" style="display: none;">
-                    <strong>📊 Preview Perubahan</strong>
+                    <strong>📊 Preview Perubahan Score</strong>
                     <p id="preview-text">Tugas yang diselesaikan: 0 | Pengurangan Score: 0 poin</p>
+                    <div class="compliance-highlight">
+                        💡 Setiap tugas mengurangi <strong>1 poin</strong> dari skor trauma Anda
+                    </div>
                 </div>
             </header>
 
             <div id="task-grid" class="task-grid">
+                <!-- Task cards akan di-generate oleh JavaScript -->
             </div>
 
             <!-- Action Buttons -->

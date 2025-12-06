@@ -1342,7 +1342,12 @@ body {
 }
 
 .trauma-level-badge.rendah {
-    background: #4CAF50;
+    background: #058c09;
+    color: white;
+}
+
+.trauma-level-badge.ringan {
+    background: #09ec11;
     color: white;
 }
 

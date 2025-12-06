@@ -1,5 +1,3 @@
-// public/js/treatment.js
-
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Ambil Data User dan Hasil Assessment
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
@@ -264,34 +262,6 @@ function toggleTask(index, cardElement) {
 
     localStorage.setItem('dailyTaskProgress', JSON.stringify(storedProgress));
 
-    // Start Debug: print and auto-download storedProgress as JSON
-    // try {
-    //     const json = JSON.stringify(storedProgress, null, 2);
-    //     const blob = new Blob([json], { type: 'application/json' });
-    //     const url = URL.createObjectURL(blob);
-    //     const a = document.createElement('a');
-    //     a.href = url;
-    //     a.download = 'storedProgress.json';
-    //     document.body.appendChild(a);
-    //     a.click();
-    //     a.remove();
-    //     URL.revokeObjectURL(url);
-    // } catch (e) {
-    //     console.error('Failed to create JSON download for storedProgress', e);
-    //     try {
-    //         const text = String(storedProgress).slice(0, 10000);
-    //         if (navigator.clipboard && navigator.clipboard.writeText) {
-    //             navigator.clipboard.writeText(text);
-    //             alert('Auto-download failed. A portion of the data was copied to clipboard.');
-    //         } else {
-    //             alert('Auto-download failed. See console for details.');
-    //         }
-    //     } catch (e2) {
-    //         alert('Failed to export storedProgress. See console for details.');
-    //     }
-    // }
-    // End Debug
-
     // Hitung ulang progress bar
     const totalTasks = cardElement.parentElement.children.length;
     updateProgressBar(totalTasks);
@@ -314,11 +284,11 @@ function updateProgressBar(totalTasks) {
     }
 }
 
-// FUNGSI BARU: Update Preview Perubahan Score
+// FUNGSI BARU: Update Preview Perubahan Score (1 POIN PER TUGAS)
 function updateSavePreview() {
     const storedProgress = JSON.parse(localStorage.getItem('dailyTaskProgress')) || [];
     const completedCount = storedProgress.length;
-    const scoreReduction = completedCount * 0.5;
+    const scoreReduction = completedCount * 1; // DIUBAH DARI 0.5 MENJADI 1 POIN
 
     const previewBox = document.getElementById('save-preview');
     const previewText = document.getElementById('preview-text');
@@ -326,30 +296,30 @@ function updateSavePreview() {
     if (previewBox && previewText) {
         if (completedCount > 0) {
             previewBox.style.display = 'block';
-            previewText.textContent = `Tugas yang diselesaikan: ${completedCount} | Pengurangan Score: -${scoreReduction.toFixed(1)} poin`;
+            previewText.textContent = `Tugas yang diselesaikan: ${completedCount} | Pengurangan Score: -${scoreReduction} poin`;
         } else {
             previewBox.style.display = 'none';
         }
     }
 }
 
-// FUNGSI UTAMA: Simpan Progress dan Update Score
+// FUNGSI UTAMA: Simpan Progress dan Update Score (1 POIN PER TUGAS)
 function saveProgress() {
     const storedProgress = JSON.parse(localStorage.getItem('dailyTaskProgress')) || [];
     const completedCount = storedProgress.length;
 
     if (completedCount === 0) {
-        alert('Belum ada tugas yang diselesaikan. Silakan selesaikan minimal 1 tugas terlebih dahulu.');
+        alert('⚠️ Belum ada tugas yang diselesaikan. Silakan selesaikan minimal 1 tugas terlebih dahulu.');
         return;
     }
 
-    // Konfirmasi dari user
-    const scoreReduction = completedCount * 0.5;
+    // Konfirmasi dari user (1 POIN PER TUGAS)
+    const scoreReduction = completedCount * 1; // DIUBAH DARI 0.5 MENJADI 1 POIN
     const confirmed = confirm(
         `Apakah Anda yakin ingin menyimpan progress?\n\n` +
         `📊 Detail:\n` +
         `- Tugas diselesaikan: ${completedCount}\n` +
-        `- Pengurangan score: -${scoreReduction.toFixed(1)} poin\n\n` +
+        `- Pengurangan score: -${scoreReduction} poin\n\n` +
         `Score akan langsung diupdate di hasil assessment Anda.`
     );
 
@@ -357,19 +327,21 @@ function saveProgress() {
         return;
     }
 
-    // Ambil data assessment saat ini
-    const currentAssessment = JSON.parse(localStorage.getItem('currentAssessment'));
-
-    if (!currentAssessment) {
-        alert('Data assessment tidak ditemukan. Silakan lakukan assessment terlebih dahulu.');
+    // Ambil data user saat ini
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    
+    if (!currentUser || !currentUser.latestAssessment) {
+        alert('❌ Data assessment tidak ditemukan. Silakan lakukan assessment terlebih dahulu.');
         return;
     }
+
+    const currentAssessment = currentUser.latestAssessment;
 
     // Simpan score lama untuk log
     const oldScore = currentAssessment.totalScore;
     const oldLevel = currentAssessment.traumaLevel;
 
-    // Update score (dikurangi karena semakin rendah semakin baik)
+    // Update score (dikurangi karena semakin rendah semakin baik) - 1 POIN PER TUGAS
     let newScore = oldScore - scoreReduction;
 
     // Batasi score minimum 0 dan maksimum 88
@@ -377,10 +349,9 @@ function saveProgress() {
 
     currentAssessment.totalScore = newScore;
 
-    // Tentukan level trauma baru berdasarkan score
-    // RULES SYSTEM berdasarkan IES-R cut-off points YANG BENAR
+    // Tentukan level trauma baru berdasarkan score IES-R
     // IES-R Standar cut-off (dalam skor 0-88):
-    // 0-23 = Minimal trauma / Low
+    // 0-23 = Minimal trauma / Rendah
     // 24-32 = Mild trauma / Ringan  
     // 33-36 = Moderate trauma / Sedang
     // 37-88 = Severe trauma / Tinggi
@@ -396,6 +367,9 @@ function saveProgress() {
 
     const newLevel = currentAssessment.traumaLevel;
 
+    // Update trauma description sesuai level baru
+    currentAssessment.traumaDescription = getTraumaDescription(newLevel);
+
     // Update di object user dan simpan ke localStorage
     currentUser.latestAssessment = currentAssessment;
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
@@ -410,16 +384,28 @@ function saveProgress() {
     alert(
         `✅ Progress berhasil disimpan!\n\n` +
         `📊 Perubahan Score:\n` +
-        `- Score Lama: ${oldScore.toFixed(1)} (${oldLevel})\n` +
-        `- Score Baru: ${newScore.toFixed(1)} (${newLevel})\n` +
-        `- Pengurangan: -${scoreReduction.toFixed(1)} poin\n\n` +
-        `Lihat detail di halaman Hasil Assessment!`
+        `- Score Lama: ${oldScore.toFixed(0)} (${oldLevel})\n` +
+        `- Score Baru: ${newScore.toFixed(0)} (${newLevel})\n` +
+        `- Pengurangan: -${scoreReduction} poin\n\n` +
+        `🎉 Lihat detail di halaman Hasil Assessment!`
     );
 
     // Redirect ke halaman results
     setTimeout(() => {
         window.location.href = 'results.html';
     }, 1000);
+}
+
+// FUNGSI: Get Trauma Description berdasarkan Level
+function getTraumaDescription(level) {
+    const descriptions = {
+        'Rendah': 'Gejala trauma yang Anda alami berada dalam tingkat yang rendah. Ini menunjukkan kemampuan adaptasi yang baik terhadap stres. Tetap pertahankan gaya hidup sehat dan dukungan sosial.',
+        'Ringan': 'Anda mengalami gejala trauma ringan. Disarankan untuk tetap melakukan aktivitas self-care dan memantau perkembangan gejala.',
+        'Sedang': 'Anda mengalami beberapa gejala trauma yang memerlukan perhatian. Disarankan untuk mencari dukungan profesional dan menerapkan teknik manajemen stres secara konsisten.',
+        'Tinggi': 'Gejala trauma yang dialami memerlukan penanganan profesional segera. Sangat disarankan untuk berkonsultasi dengan ahli kesehatan mental untuk mendapatkan perawatan yang tepat.'
+    };
+    
+    return descriptions[level] || 'Silakan konsultasi dengan profesional kesehatan mental.';
 }
 
 // FUNGSI: Update Assessment History untuk Chart
@@ -445,7 +431,7 @@ function updateAssessmentHistory(assessment) {
 
 // FUNGSI: Reset Tugas Hari Ini
 function resetTasks() {
-    const confirmed = confirm('Apakah Anda yakin ingin mereset semua tugas hari ini?\n\nCatatan: Score tidak akan berubah, hanya status tugas yang direset.');
+    const confirmed = confirm('🔄 Apakah Anda yakin ingin mereset semua tugas hari ini?\n\nCatatan: Score tidak akan berubah, hanya status tugas yang direset.');
 
     if (confirmed) {
         localStorage.removeItem('dailyTaskProgress');
